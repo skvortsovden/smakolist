@@ -71,7 +71,7 @@ class MealSlotCard extends StatelessWidget {
                 child: const Icon(Icons.delete_outline, color: Colors.black54),
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 4, 4, 4),
+                padding: const EdgeInsets.fromLTRB(12, 2, 4, 2),
                 child: Row(
                   children: [
                     Expanded(
@@ -79,21 +79,21 @@ class MealSlotCard extends StatelessWidget {
                         entry.recipeName,
                         style: const TextStyle(
                           fontFamily: 'FixelText',
-                          fontSize: 16,
+                          fontSize: 15,
                           color: Colors.black,
                         ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 18, color: Colors.black38),
+                      icon: const Icon(Icons.close, size: 16, color: Colors.black38),
                       onPressed: () {
                         HapticFeedback.mediumImpact();
                         onRemove(index);
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
+                        minWidth: 28,
+                        minHeight: 24,
                       ),
                     ),
                   ],

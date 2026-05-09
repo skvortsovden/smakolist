@@ -159,7 +159,7 @@ class RecipeDetailScreen extends StatelessWidget {
                                 size: 20, color: Colors.black54),
                             SizedBox(width: 12),
                             Text(
-                              'Поділитись рецептом',
+                              'Поділитись',
                               style: TextStyle(
                                 fontFamily: 'FixelText',
                                 fontSize: 16,
@@ -532,7 +532,6 @@ class _ShareCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final hasPhoto = photoBytes != null;
-    final photoH = hasPhoto ? 220.0 : 0.0;
     final topPad = hasPhoto ? 20.0 : 40.0;
 
     return Material(
@@ -545,12 +544,15 @@ class _ShareCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Photo (full-width, fixed height)
+              // Photo — padded to match text margins, natural aspect ratio (no crop)
               if (hasPhoto)
-                SizedBox(
-                  width: kW,
-                  height: photoH,
-                  child: Image.memory(photoBytes!, fit: BoxFit.cover),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(_pad, _pad, _pad, 0),
+                  child: Image.memory(
+                    photoBytes!,
+                    width: kW - 2 * _pad,
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
 
               // Header: name + logo
@@ -602,79 +604,128 @@ class _ShareCard extends StatelessWidget {
                 child: Container(height: 2, color: Colors.black),
               ),
 
-              // Ingredients + description — fills remaining space
+              // Middle section — single column, full width.
+              // With photo: ingredients only. Without photo: description then ingredients.
+              // OverflowBox removes height constraint; ClipRect clips the bottom.
+              // CrossAxisAlignment.stretch on the Column forces ingredient Rows to the
+              // full content width so quantities land at the card's right padding edge.
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(_pad, 14, _pad, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (recipe.ingredients.isNotEmpty) ...[
-                        const Text(
-                          'ІНГРЕДІЄНТИ',
-                          style: TextStyle(
-                            fontFamily: 'FixelText',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 9,
-                            letterSpacing: 1.2,
-                            color: Colors.black45,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...recipe.ingredients.take(10).map((i) => Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      i.name,
-                                      style: const TextStyle(
-                                        fontFamily: 'FixelText',
-                                        fontSize: 13,
-                                        color: Colors.black,
+                child: ClipRect(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(_pad, 14, _pad, 0),
+                    child: LayoutBuilder(builder: (_, constraints) {
+                      // Reserve height for description block when shown (no photo).
+                      // label ≈ 9pt+8gap = 19px; each desc line ≈ 12pt*1.5 = 18px; gap = 14px.
+                      double reservedForDesc = 0;
+                      final hasDesc = !hasPhoto &&
+                          recipe.description != null &&
+                          recipe.description!.isNotEmpty;
+                      if (hasDesc) {
+                        final lines =
+                            (recipe.description!.length / 35).ceil().clamp(1, 8);
+                        reservedForDesc = 19 + lines * 18.0 + 14;
+                      }
+
+                      // How many ingredient rows fit in remaining height.
+                      // label ≈ 19px; each row ≈ 12pt*1.4 + 5px spacing ≈ 22px.
+                      const labelH = 19.0;
+                      const rowH = 22.0;
+                      final availForIngr =
+                          constraints.maxHeight - reservedForDesc;
+                      final maxItems =
+                          ((availForIngr - labelH) / rowH).floor().clamp(
+                                0,
+                                recipe.ingredients.length,
+                              );
+                      final overflow = recipe.ingredients.length - maxItems;
+
+                      return OverflowBox(
+                        alignment: Alignment.topLeft,
+                        maxHeight: double.infinity,
+                        child: Column(
+                          // stretch forces Row children to full content width
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Description (no photo only)
+                            if (hasDesc) ...[
+                              const Text(
+                                'ОПИС',
+                                style: TextStyle(
+                                  fontFamily: 'FixelText',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 9,
+                                  letterSpacing: 1.2,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                recipe.description!,
+                                style: const TextStyle(
+                                  fontFamily: 'FixelText',
+                                  fontSize: 12,
+                                  color: Colors.black87,
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+                            // Ingredients
+                            if (recipe.ingredients.isNotEmpty) ...[
+                              const Text(
+                                'ІНГРЕДІЄНТИ',
+                                style: TextStyle(
+                                  fontFamily: 'FixelText',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 9,
+                                  letterSpacing: 1.2,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              ...recipe.ingredients.take(maxItems).map(
+                                    (i) => Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 5),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              i.name,
+                                              style: const TextStyle(
+                                                fontFamily: 'FixelText',
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          if (i.quantity != null)
+                                            Text(
+                                              '${_fmtQty(i.quantity!)} ${i.unit}',
+                                              style: const TextStyle(
+                                                fontFamily: 'FixelText',
+                                                fontSize: 12,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  if (i.quantity != null)
-                                    Text(
-                                      '${_fmtQty(i.quantity!)} ${i.unit}',
-                                      style: const TextStyle(
-                                        fontFamily: 'FixelText',
-                                        fontSize: 13,
-                                        color: Colors.black54,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            )),
-                        if (recipe.ingredients.length > 10)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              '+ ще ${recipe.ingredients.length - 10}',
-                              style: const TextStyle(
-                                fontFamily: 'FixelText',
-                                fontSize: 12,
-                                color: Colors.black38,
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 10),
-                      ],
-                      if (recipe.description != null &&
-                          recipe.description!.isNotEmpty)
-                        Text(
-                          recipe.description!,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: 'FixelText',
-                            fontSize: 12,
-                            color: Colors.black45,
-                            height: 1.5,
-                          ),
+                              if (overflow > 0)
+                                Text(
+                                  '+ ще $overflow',
+                                  style: const TextStyle(
+                                    fontFamily: 'FixelText',
+                                    fontSize: 11,
+                                    color: Colors.black38,
+                                  ),
+                                ),
+                            ],
+                          ],
                         ),
-                    ],
+                      );
+                    }),
                   ),
                 ),
               ),

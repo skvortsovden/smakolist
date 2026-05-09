@@ -491,7 +491,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                     TextField(
                       controller: _descController,
                       maxLines: null,
-                      maxLength: 300,
+                      maxLength: 140,
                       decoration: InputDecoration(
                         hintText: S.recipeDescHint,
                         hintStyle: const TextStyle(color: Colors.black38),
