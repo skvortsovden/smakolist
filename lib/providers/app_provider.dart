@@ -396,7 +396,10 @@ class AppProvider extends ChangeNotifier {
 
   static String _csvRow(List<String> fields) {
     return fields.map((f) {
-      if (f.contains(',') || f.contains('"') || f.contains('\n') || f.contains('\r')) {
+      // Also quote fields with ';' — European locale apps auto-detect semicolons
+      // as delimiters, which would shift all columns when ingredients/tags use them.
+      if (f.contains(',') || f.contains(';') || f.contains('"') ||
+          f.contains('\n') || f.contains('\r')) {
         return '"${f.replaceAll('"', '""')}"';
       }
       return f;

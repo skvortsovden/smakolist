@@ -28,6 +28,11 @@ class S {
   static String get onboardingNameTitle => _s('onboarding_name_title');
   static String get onboardingNameHint => _s('onboarding_name_hint');
   static String get onboardingNameBtn => _s('onboarding_name_btn');
+  static String welcomeTitle(String name) =>
+      _s('onboarding_welcome_title').replaceFirst('{name}', name);
+  static String get welcomeTitleDefault => _s('onboarding_welcome_title_default');
+  static String get welcomeBody => _s('onboarding_welcome_body');
+  static String get welcomeBtn => _s('onboarding_welcome_btn');
   static String get onboardingGuideTitle => _s('onboarding_guide_title');
   static String get onboardingGuideText => _s('onboarding_guide_text');
   static String get onboardingGuideBtn => _s('onboarding_guide_btn');

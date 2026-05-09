@@ -25,10 +25,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _nextPage() {
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOut,
-    );
+    FocusScope.of(context).unfocus();
+    Future.delayed(const Duration(milliseconds: 80), () {
+      if (!mounted) return;
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _finish() {
@@ -66,6 +70,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     controller: _nameController,
                     onNext: _nextPage,
                   ),
+                  _WelcomePage(
+                    nameController: _nameController,
+                    onNext: _nextPage,
+                  ),
                   _GuidePage(onFinish: _finish),
                 ],
               ),
@@ -86,7 +94,7 @@ class _ProgressDots extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(2, (i) {
+      children: List.generate(3, (i) {
         final isActive = i == current;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 250),
@@ -147,6 +155,52 @@ class _NamePage extends StatelessWidget {
           ),
           const Spacer(),
           _PrimaryButton(label: S.onboardingNameBtn, onTap: onNext),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+
+class _WelcomePage extends StatelessWidget {
+  final TextEditingController nameController;
+  final VoidCallback onNext;
+
+  const _WelcomePage({required this.nameController, required this.onNext});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = nameController.text.trim();
+    final title =
+        name.isNotEmpty ? S.welcomeTitle(name) : S.welcomeTitleDefault;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Spacer(flex: 2),
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'FixelDisplay',
+              fontWeight: FontWeight.w800,
+              fontSize: 36,
+              color: Colors.black,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            S.welcomeBody,
+            style: const TextStyle(
+              fontFamily: 'FixelText',
+              fontSize: 18,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+          const Spacer(flex: 3),
+          _PrimaryButton(label: S.welcomeBtn, onTap: onNext),
           const SizedBox(height: 20),
         ],
       ),

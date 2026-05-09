@@ -29,31 +29,33 @@ class MealSlotCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header row
+          // Header row — "не додано" inline on the right when empty
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            child: Text(
-              slot.label,
-              style: const TextStyle(
-                fontFamily: 'FixelText',
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+            child: Row(
+              children: [
+                Text(
+                  slot.label,
+                  style: const TextStyle(
+                    fontFamily: 'FixelText',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                if (entries.isEmpty) ...[
+                  const Spacer(),
+                  Text(
+                    S.todayNoItems,
+                    style: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontSize: 13,
+                      color: Colors.black38,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
-          // Logged recipes or placeholder
-          if (entries.isEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-              child: Text(
-                S.todayNoItems,
-                style: const TextStyle(
-                  fontFamily: 'FixelText',
-                  fontSize: 14,
-                  color: Colors.black38,
-                ),
-              ),
-            ),
           ...entries.asMap().entries.map((e) {
             final index = e.key;
             final entry = e.value;
@@ -71,7 +73,7 @@ class MealSlotCard extends StatelessWidget {
                 child: const Icon(Icons.delete_outline, color: Colors.black54),
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 2, 4, 2),
+                padding: const EdgeInsets.fromLTRB(12, 3, 8, 3),
                 child: Row(
                   children: [
                     Expanded(
@@ -79,21 +81,19 @@ class MealSlotCard extends StatelessWidget {
                         entry.recipeName,
                         style: const TextStyle(
                           fontFamily: 'FixelText',
-                          fontSize: 15,
+                          fontSize: 14,
                           color: Colors.black,
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 16, color: Colors.black38),
-                      onPressed: () {
+                    GestureDetector(
+                      onTap: () {
                         HapticFeedback.mediumImpact();
                         onRemove(index);
                       },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 28,
-                        minHeight: 24,
+                      child: const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(Icons.close, size: 14, color: Colors.black38),
                       ),
                     ),
                   ],

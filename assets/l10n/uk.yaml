@@ -13,6 +13,10 @@ tab_settings: Налаштування
 onboarding_name_title: "Як до тебе звертатись?"
 onboarding_name_hint: "Введи своє ім'я…"
 onboarding_name_btn: Далі
+onboarding_welcome_title: "Вітаю, {name}!"
+onboarding_welcome_title_default: "Вітаю!"
+onboarding_welcome_body: "Радий, що ти вирішив зробити свої списки смачними."
+onboarding_welcome_btn: Далі
 onboarding_guide_title: Як користуватись?
 onboarding_guide_text: "1. Додавай власні «Рецепти».\n\n2. Відкривай «Сьогодні» та додавай свої страви за день.\n\n3. «Календар» допоможе переглянути та додати записи за попередні дні.\n\n4. «Звіт» допоможе стежити за твоїми звичками харчування."
 onboarding_guide_btn: Розпочати
@@ -26,7 +30,7 @@ today_greeting_default: "Вітаю, друже!"
 today_date_prefix: Сьогодні
 today_section_meals: ПРИЙОМИ ЇЖІ
 today_section_note: НОТАТКА
-today_note_hint: "Якісь смаколики сьогодні?"
+today_note_hint: "Ще якісь смаколики сьогодні?"
 today_slot_breakfast: Сніданок
 today_slot_lunch: Обід
 today_slot_dinner: Вечеря
@@ -35,12 +39,12 @@ today_slot_time_breakfast: "7:00–10:00"
 today_slot_time_lunch: "12:00–14:00"
 today_slot_time_dinner: "18:00–21:00"
 today_slot_time_snack: будь-коли
-today_no_items: Не додано
+today_no_items: не додано
 today_btn_add_prefix: "+ "
 
 # ── Calendar ─────────────────────────────────────────────────────────────────
 calendar_future_day: Цей день ще не настав
-calendar_no_data: Не додано
+calendar_no_data: не додано
 calendar_btn_add: Додати
 calendar_btn_edit: Змінити
 
@@ -51,14 +55,14 @@ edit_btn_save: Зберегти
 picker_title_prefix: "Додати "
 picker_empty: Рецепти відсутні. Додавай їх у розділі «Рецепти».
 picker_go_recipes: Перейти до рецептів
-picker_filter_all: Усі
+picker_filter_all: усі
 
 # ── Recipes view ──────────────────────────────────────────────────────────────
 recipes_title: Рецепти
 recipes_count_suffix_1: рецепт
 recipes_count_suffix_few: рецепти
 recipes_count_suffix_many: рецептів
-recipes_filter_all: Усі
+recipes_filter_all: усі
 recipes_empty_title: Ще немає рецептів
 recipes_empty_subtitle: "Додай свій перший рецепт"
 recipes_empty_btn: "+ Новий рецепт"
