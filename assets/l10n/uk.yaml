@@ -14,7 +14,7 @@ onboarding_name_title: "Як до тебе звертатись?"
 onboarding_name_hint: "Введи своє ім'я…"
 onboarding_name_btn: Далі
 onboarding_guide_title: Як користуватись?
-onboarding_guide_text: "1. Створи свої улюблені рецепти в розділі «Рецепти».\n\n2. Щодня відкривай «Сьогодні» та додавай, що ти їв.\n\n3. Переглядай свою їжу за минулі дні у «Календарі».\n\n4. Стеж за своїми звичками харчування у «Звіті»."
+onboarding_guide_text: "1. Додавай власні «Рецепти».\n\n2. Відкривай «Сьогодні» та додавай свої страви за день.\n\n3. «Календар» допоможе переглянути та додати записи за попередні дні.\n\n4. «Звіт» допоможе стежити за твоїми звичками харчування."
 onboarding_guide_btn: Розпочати
 
 # ── Splash ────────────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ today_greeting_default: "Вітаю, друже!"
 today_date_prefix: Сьогодні
 today_section_meals: ПРИЙОМИ ЇЖІ
 today_section_note: НОТАТКА
-today_note_hint: "Що за смаколики?"
+today_note_hint: "Якісь смаколики сьогодні?"
 today_slot_breakfast: Сніданок
 today_slot_lunch: Обід
 today_slot_dinner: Вечеря
@@ -49,7 +49,7 @@ edit_btn_save: Зберегти
 
 # ── Recipe picker ────────────────────────────────────────────────────────────
 picker_title_prefix: "Додати "
-picker_empty: Рецепти відсутні
+picker_empty: Рецепти відсутні. Додавай їх у розділі «Рецепти».
 picker_go_recipes: Перейти до рецептів
 picker_filter_all: Усі
 

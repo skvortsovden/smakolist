@@ -1,14 +1,23 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../l10n/strings.dart';
 import '../models/recipe.dart';
 import '../providers/app_provider.dart';
 import 'add_edit_recipe_screen.dart';
+
+String _fmtQty(double qty) =>
+    qty % 1 == 0 ? qty.toInt().toString() : qty.toString();
 
 class RecipeDetailScreen extends StatelessWidget {
   final Recipe recipe;
@@ -79,10 +88,8 @@ class RecipeDetailScreen extends StatelessWidget {
                         runSpacing: 6,
                         children: [
                           if (current.category != null)
-                            _TagChip(
-                                label: current.category!, filled: true),
-                          ...current.tags
-                              .map((t) => _TagChip(label: t.label)),
+                            _TagChip(label: current.category!, filled: true),
+                          ...current.tags.map((t) => _TagChip(label: t.label)),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -122,7 +129,7 @@ class RecipeDetailScreen extends StatelessWidget {
                               ),
                               if (i.quantity != null)
                                 Text(
-                                  '${_formatQty(i.quantity!)} ${i.unit}',
+                                  '${_fmtQty(i.quantity!)} ${i.unit}',
                                   style: const TextStyle(
                                     fontFamily: 'FixelText',
                                     fontSize: 15,
@@ -136,6 +143,64 @@ class RecipeDetailScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                     ],
                     const SizedBox(height: 8),
+                    // Share recipe
+                    GestureDetector(
+                      onTap: () => _shareRecipe(context, current),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.share_outlined,
+                                size: 20, color: Colors.black54),
+                            SizedBox(width: 12),
+                            Text(
+                              'Поділитись рецептом',
+                              style: TextStyle(
+                                fontFamily: 'FixelText',
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Copy ingredients
+                    if (current.ingredients.isNotEmpty) ...[
+                      GestureDetector(
+                        onTap: () => _copyIngredients(context, current),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.copy_outlined,
+                                  size: 20, color: Colors.black54),
+                              SizedBox(width: 12),
+                              Text(
+                                'Копіювати список інгредієнтів',
+                                style: TextStyle(
+                                  fontFamily: 'FixelText',
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                     // Delete action
                     GestureDetector(
                       onTap: () => _confirmDelete(context, current),
@@ -143,8 +208,7 @@ class RecipeDetailScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.black, width: 2),
+                          border: Border.all(color: Colors.black, width: 2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -174,9 +238,62 @@ class RecipeDetailScreen extends StatelessWidget {
     );
   }
 
-  String _formatQty(double qty) {
-    if (qty % 1 == 0) return qty.toInt().toString();
-    return qty.toString();
+  Future<void> _shareRecipe(BuildContext context, Recipe recipe) async {
+    final box = context.findRenderObject() as RenderBox?;
+    final shareOrigin = box != null
+        ? box.localToGlobal(Offset.zero) & box.size
+        : const Rect.fromLTWH(0, 0, 1, 1);
+
+    // Pre-load photo bytes so the share card renders synchronously in the sheet
+    Uint8List? photoBytes;
+    if (recipe.photoPath != null) {
+      try {
+        final String absPath;
+        if (recipe.photoPath!.startsWith('/')) {
+          absPath = recipe.photoPath!;
+        } else {
+          final dir = await getApplicationDocumentsDirectory();
+          absPath = p.join(dir.path, recipe.photoPath!);
+        }
+        photoBytes = await File(absPath).readAsBytes();
+      } catch (_) {}
+    }
+
+    if (!context.mounted) return;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _RecipeShareSheet(
+        recipe: recipe,
+        photoBytes: photoBytes,
+        shareOrigin: shareOrigin,
+      ),
+    );
+  }
+
+  void _copyIngredients(BuildContext context, Recipe current) {
+    final lines = current.ingredients.map((i) {
+      if (i.quantity != null) {
+        return '${i.name} — ${_fmtQty(i.quantity!)} ${i.unit}';
+      }
+      return i.name;
+    }).join('\n');
+    Clipboard.setData(ClipboardData(text: lines));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Інгредієнти скопійовано',
+          style: TextStyle(fontFamily: 'FixelText'),
+        ),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   void _openEdit(BuildContext context, Recipe current) {
@@ -196,8 +313,7 @@ class RecipeDetailScreen extends StatelessWidget {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         title: Text(
           S.recipeDeleteTitle,
-          style: const TextStyle(
-              fontWeight: FontWeight.w700, fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
         ),
         content: Text(
           S.recipeDeleteBody,
@@ -238,6 +354,431 @@ class RecipeDetailScreen extends StatelessWidget {
     );
   }
 }
+
+// ── Share preview sheet ───────────────────────────────────────────────────────
+
+class _RecipeShareSheet extends StatefulWidget {
+  final Recipe recipe;
+  final Uint8List? photoBytes;
+  final Rect shareOrigin;
+
+  const _RecipeShareSheet({
+    required this.recipe,
+    required this.photoBytes,
+    required this.shareOrigin,
+  });
+
+  @override
+  State<_RecipeShareSheet> createState() => _RecipeShareSheetState();
+}
+
+class _RecipeShareSheetState extends State<_RecipeShareSheet> {
+  final _captureKey = GlobalKey();
+  bool _sharing = false;
+
+  Future<void> _capture() async {
+    setState(() => _sharing = true);
+    try {
+      // Give Flutter one extra frame to ensure the card is fully painted
+      await Future.delayed(const Duration(milliseconds: 80));
+
+      final boundary = _captureKey.currentContext!.findRenderObject()!
+          as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final data = await image.toByteData(format: ui.ImageByteFormat.png);
+      final bytes = data!.buffer.asUint8List();
+
+      final dir = await getTemporaryDirectory();
+      final file = File(p.join(
+          dir.path,
+          'smakolist_${DateTime.now().millisecondsSinceEpoch ~/ 1000}.png'));
+      await file.writeAsBytes(bytes);
+
+      if (!mounted) return;
+      Navigator.of(context).pop();
+
+      await Share.shareXFiles([XFile(file.path, mimeType: 'image/png')],
+          sharePositionOrigin: widget.shareOrigin);
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
+    // Scale 360×640 card to fit within the bottom sheet preview area
+    final previewMaxW = screenW - 40;
+    final previewMaxH = screenH * 0.52;
+    // Compute uniform scale that fits both dimensions
+    final scale = (previewMaxW / _ShareCard.kW)
+        .clamp(0.0, previewMaxH / _ShareCard.kH);
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.black12,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Preview card with shadow — fixed 9:16 aspect ratio
+            Center(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.22),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: _ShareCard.kW * scale,
+                    height: _ShareCard.kH * scale,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      alignment: Alignment.topCenter,
+                      child: RepaintBoundary(
+                        key: _captureKey,
+                        child: _ShareCard(
+                          recipe: widget.recipe,
+                          photoBytes: widget.photoBytes,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            // Helper text
+            const Text(
+              'Картинка для соцмереж або повідомлень',
+              style: TextStyle(
+                fontFamily: 'FixelText',
+                fontSize: 13,
+                color: Colors.black38,
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Share button
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _sharing ? null : _capture,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.black,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _sharing
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text(
+                        'Поділитись',
+                        style: TextStyle(
+                          fontFamily: 'FixelText',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Share card ────────────────────────────────────────────────────────────────
+// Fixed 360×640 logical canvas → 1080×1920 px at pixelRatio 3.0 (story size)
+
+class _ShareCard extends StatelessWidget {
+  final Recipe recipe;
+  final Uint8List? photoBytes;
+
+  static const double kW = 360.0;
+  static const double kH = 640.0;
+  static const double _pad = 28.0;
+
+  const _ShareCard({required this.recipe, this.photoBytes});
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final hasPhoto = photoBytes != null;
+    final photoH = hasPhoto ? 220.0 : 0.0;
+    final topPad = hasPhoto ? 20.0 : 40.0;
+
+    return Material(
+      color: Colors.transparent,
+      child: SizedBox(
+        width: kW,
+        height: kH,
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Photo (full-width, fixed height)
+              if (hasPhoto)
+                SizedBox(
+                  width: kW,
+                  height: photoH,
+                  child: Image.memory(photoBytes!, fit: BoxFit.cover),
+                ),
+
+              // Header: name + logo
+              Padding(
+                padding: EdgeInsets.fromLTRB(_pad, topPad, _pad, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            recipe.name,
+                            style: const TextStyle(
+                              fontFamily: 'FixelDisplay',
+                              fontSize: 26,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                              height: 1.2,
+                            ),
+                          ),
+                          if (recipe.category != null ||
+                              recipe.tags.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 5,
+                              runSpacing: 5,
+                              children: [
+                                if (recipe.category != null)
+                                  _ShareChip(recipe.category!, filled: true),
+                                ...recipe.tags.map((t) => _ShareChip(t.label)),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Image.asset('assets/smakolist-logo.png',
+                        height: 26, fit: BoxFit.contain),
+                  ],
+                ),
+              ),
+
+              // 2px divider
+              Padding(
+                padding: const EdgeInsets.fromLTRB(_pad, 14, _pad, 0),
+                child: Container(height: 2, color: Colors.black),
+              ),
+
+              // Ingredients + description — fills remaining space
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(_pad, 14, _pad, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (recipe.ingredients.isNotEmpty) ...[
+                        const Text(
+                          'ІНГРЕДІЄНТИ',
+                          style: TextStyle(
+                            fontFamily: 'FixelText',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 9,
+                            letterSpacing: 1.2,
+                            color: Colors.black45,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...recipe.ingredients.take(10).map((i) => Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      i.name,
+                                      style: const TextStyle(
+                                        fontFamily: 'FixelText',
+                                        fontSize: 13,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  if (i.quantity != null)
+                                    Text(
+                                      '${_fmtQty(i.quantity!)} ${i.unit}',
+                                      style: const TextStyle(
+                                        fontFamily: 'FixelText',
+                                        fontSize: 13,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )),
+                        if (recipe.ingredients.length > 10)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(
+                              '+ ще ${recipe.ingredients.length - 10}',
+                              style: const TextStyle(
+                                fontFamily: 'FixelText',
+                                fontSize: 12,
+                                color: Colors.black38,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                      ],
+                      if (recipe.description != null &&
+                          recipe.description!.isNotEmpty)
+                        Text(
+                          recipe.description!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: 'FixelText',
+                            fontSize: 12,
+                            color: Colors.black45,
+                            height: 1.5,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Footer: 1px divider + branding + date
+              Padding(
+                padding: const EdgeInsets.fromLTRB(_pad, 0, _pad, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(height: 1, color: Colors.black12),
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Смаколист',
+                                style: TextStyle(
+                                  fontFamily: 'FixelDisplay',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                'твій смачний список',
+                                style: TextStyle(
+                                  fontFamily: 'FixelText',
+                                  fontSize: 9,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              DateFormat('d MMMM', 'uk').format(now),
+                              style: const TextStyle(
+                                fontFamily: 'FixelText',
+                                fontSize: 9,
+                                color: Colors.black45,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('yyyy', 'uk').format(now),
+                              style: const TextStyle(
+                                fontFamily: 'FixelText',
+                                fontSize: 9,
+                                color: Colors.black45,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShareChip extends StatelessWidget {
+  final String label;
+  final bool filled;
+
+  const _ShareChip(this.label, {this.filled = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: filled ? Colors.black : Colors.white,
+        border: Border.all(
+            color: filled ? Colors.black : Colors.black38, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontFamily: 'FixelText',
+          fontSize: 11,
+          color: filled ? Colors.white : Colors.black87,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 class _PhotoImage extends StatefulWidget {
   final String photoPath;

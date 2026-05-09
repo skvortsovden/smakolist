@@ -548,7 +548,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                                       size: 16, color: Colors.black38),
                                   SizedBox(width: 4),
                                   Text(
-                                    'Своя',
+                                    'нова',
                                     style: TextStyle(
                                       fontFamily: 'FixelText',
                                       fontSize: 14,
