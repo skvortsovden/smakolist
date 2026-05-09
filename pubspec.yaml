@@ -1,0 +1,74 @@
+name: smakolist
+description: Смаколист — твій смачний список
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  table_calendar: ^3.1.0
+  shared_preferences: ^2.2.2
+  provider: ^6.1.2
+  flutter_local_notifications: ^18.0.0
+  timezone: ^0.9.4
+  yaml: ^3.1.2
+  share_plus: ^10.0.0
+  path_provider: ^2.1.0
+  file_picker: ^8.0.0
+  package_info_plus: ^8.1.0
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  macos:
+    generate: true
+    image_path: assets/smakolist-logo.png
+  image_path: assets/smakolist-logo.png
+  remove_alpha_ios: true
+  background_color: "#ffffff"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/smakolist-logo.png
+  ios: true
+  android: false
+  web: false
+  ios_content_mode: center
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/smakolist-logo.png
+    - assets/fonts/
+    - assets/l10n/uk.yaml
+
+  fonts:
+    - family: FixelDisplay
+      fonts:
+        - asset: assets/fonts/FixelDisplay-Regular.ttf
+        - asset: assets/fonts/FixelDisplay-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/FixelDisplay-SemiBold.ttf
+          weight: 600
+    - family: FixelText
+      fonts:
+        - asset: assets/fonts/FixelText-Regular.ttf
+        - asset: assets/fonts/FixelText-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/FixelText-SemiBold.ttf
+          weight: 600

@@ -1,0 +1,135 @@
+# ── App ───────────────────────────────────────────────────────────────────────
+app_title: Смаколист
+app_tagline: твій смачний список
+
+# ── Navigation tabs ───────────────────────────────────────────────────────────
+tab_calendar: Календар
+tab_today: Сьогодні
+tab_report: Звіт
+tab_recipes: Рецепти
+tab_settings: Налаштування
+
+# ── Onboarding ────────────────────────────────────────────────────────────────
+onboarding_name_title: "Як до тебе звертатись?"
+onboarding_name_hint: "Введи своє ім'я…"
+onboarding_name_btn: Далі
+onboarding_guide_title: Як користуватись?
+onboarding_guide_text: "1. Створи свої улюблені рецепти в розділі «Рецепти».\n\n2. Щодня відкривай «Сьогодні» та додавай, що ти їв.\n\n3. Переглядай свою їжу за минулі дні у «Календарі».\n\n4. Стеж за своїми звичками харчування у «Звіті»."
+onboarding_guide_btn: Розпочати
+
+# ── Splash ────────────────────────────────────────────────────────────────────
+splash_title: Смаколист
+
+# ── Today view ────────────────────────────────────────────────────────────────
+today_greeting_named: "Вітаю, {name}!"
+today_greeting_default: "Вітаю, друже!"
+today_date_prefix: Сьогодні
+today_section_meals: ПРИЙОМИ ЇЖІ
+today_section_note: НОТАТКА
+today_note_hint: "Що їв сьогодні цікавого?"
+today_slot_breakfast: Сніданок
+today_slot_lunch: Обід
+today_slot_dinner: Вечеря
+today_slot_snack: Перекус
+today_slot_time_breakfast: "7:00–10:00"
+today_slot_time_lunch: "12:00–14:00"
+today_slot_time_dinner: "18:00–21:00"
+today_slot_time_snack: будь-коли
+today_no_items: Нічого не додано
+today_btn_add_prefix: "+ "
+
+# ── Calendar ─────────────────────────────────────────────────────────────────
+calendar_future_day: Цей день ще не настав
+calendar_no_data: Нічого не залоговано
+calendar_btn_add: Додати
+calendar_btn_edit: Змінити
+
+# ── Edit day screen ───────────────────────────────────────────────────────────
+edit_btn_save: Зберегти
+
+# ── Recipe picker ────────────────────────────────────────────────────────────
+picker_title_prefix: "Додати до "
+picker_empty: Рецепти відсутні
+picker_go_recipes: Перейти до рецептів
+picker_filter_all: Усі
+
+# ── Recipes view ──────────────────────────────────────────────────────────────
+recipes_title: Рецепти
+recipes_count_suffix_1: рецепт
+recipes_count_suffix_few: рецепти
+recipes_count_suffix_many: рецептів
+recipes_filter_all: Усі
+recipes_empty_title: Ще немає рецептів
+recipes_empty_subtitle: "Додай свій перший рецепт"
+recipes_empty_btn: "+ Новий рецепт"
+
+# ── Recipe detail ────────────────────────────────────────────────────────────
+recipe_detail_delete_btn: Видалити рецепт
+recipe_delete_title: "Видалити рецепт?"
+recipe_delete_body: "Цей рецепт буде видалено. Записи про страви залишаться."
+recipe_delete_confirm: Видалити
+recipe_delete_cancel: Скасувати
+
+# ── Add / Edit recipe ────────────────────────────────────────────────────────
+recipe_add_title: Новий рецепт
+recipe_edit_title: Редагувати
+recipe_section_name: НАЗВА
+recipe_name_hint: "Назва страви…"
+recipe_name_error_duplicate: "Назва вже існує"
+recipe_section_desc: "ОПИС (необов'язково)"
+recipe_desc_hint: "Короткий опис або інгредієнти…"
+recipe_section_tags: ПРИЙОМ ЇЖІ
+recipe_btn_save: Зберегти
+
+# ── Report view ───────────────────────────────────────────────────────────────
+report_title: Звіт
+report_period_week: Тиждень
+report_period_month: Місяць
+report_period_year: Рік
+report_no_data: Недостатньо даних за цей період
+report_section_fill: ЗАПИСИ
+report_fill_days: "{n}/{m} днів"
+report_section_streak: СЕРІЯ
+report_streak_current: "Поспіль: {n} дн."
+report_streak_longest: "Найдовший: {n} дн."
+report_section_top: ТОП СТРАВ
+report_times_suffix: разів
+report_section_slots: ПРИЙОМИ ЇЖІ
+
+# ── Settings ──────────────────────────────────────────────────────────────────
+settings_title: Налаштування
+settings_name_label: "ЯК ДО ТЕБЕ ЗВЕРТАТИСЯ?"
+settings_name_hint: "Введи ім'я тут…"
+settings_section_reminders: НАГАДУВАННЯ
+settings_reminder_breakfast: Сніданок
+settings_reminder_lunch: Обід
+settings_reminder_dinner: Вечеря
+settings_reminder_time_label: Час
+settings_section_data: ДАНІ
+settings_export_btn: Експортувати дані
+settings_export_icon: download_outlined
+settings_import_btn: Імпортувати дані
+settings_clear_btn: Видалити всі дані
+settings_export_title: Експорт даних
+settings_export_message: "Приватність перш за все.\nВсі твої дані зберігаються лише на твоєму телефоні.\nДані буде збережено у форматі JSON."
+settings_export_save: Зберегти
+settings_export_cancel: Скасувати
+settings_import_title: Імпорт даних
+settings_import_message: "Оберіть JSON-файл на телефоні.\nІснуючі рецепти та записи зберігаються, нові додаються або оновлюють існуючі."
+settings_import_choose: Обрати файл
+settings_import_cancel: Скасувати
+settings_import_done_title: Дані імпортовано
+settings_import_done_message: Записи успішно додано.
+settings_import_done_btn: Зрозуміло
+settings_import_error_title: Помилка імпорту
+settings_import_error_message: "Файл не вдалось прочитати. Перевірте формат."
+settings_import_error_btn: Зрозуміло
+settings_clear_title: "Видалити всі дані?"
+settings_clear_message: "Усі рецепти та записи про їжу буде видалено безповоротно."
+settings_clear_export: "Зберегти та видалити"
+settings_clear_erase: Просто видалити
+settings_clear_cancel: Скасувати
+settings_clear_done_title: Дані видалено
+settings_clear_done_message: Усі дані було успішно видалено.
+settings_clear_done_btn: Зрозуміло
+settings_privacy: Усі дані зберігаються лише на цьому пристрої.
