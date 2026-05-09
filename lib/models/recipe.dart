@@ -11,13 +11,13 @@ enum MealType {
   String get label {
     switch (this) {
       case MealType.breakfast:
-        return 'Сніданок';
+        return 'сніданок';
       case MealType.lunch:
-        return 'Обід';
+        return 'обід';
       case MealType.dinner:
-        return 'Вечеря';
+        return 'вечеря';
       case MealType.snack:
-        return 'Перекус';
+        return 'перекус';
     }
   }
 
@@ -49,6 +49,7 @@ class Recipe {
   final List<MealType> tags;
   final String? category;
   final List<RecipeIngredient> ingredients;
+  final String? photoPath;
   final DateTime createdAt;
 
   Recipe({
@@ -58,6 +59,7 @@ class Recipe {
     required this.tags,
     this.category,
     this.ingredients = const [],
+    this.photoPath,
     required this.createdAt,
   });
 
@@ -67,6 +69,7 @@ class Recipe {
     List<MealType> tags = const [],
     String? category,
     List<RecipeIngredient> ingredients = const [],
+    String? photoPath,
   }) {
     return Recipe(
       id: const Uuid().v4(),
@@ -75,6 +78,7 @@ class Recipe {
       tags: tags,
       category: category,
       ingredients: ingredients,
+      photoPath: photoPath,
       createdAt: DateTime.now(),
     );
   }
@@ -87,6 +91,7 @@ class Recipe {
     List<RecipeIngredient>? ingredients,
     Object? descriptionOrNull = _sentinel,
     Object? categoryOrNull = _sentinel,
+    Object? photoPathOrNull = _sentinel,
   }) {
     return Recipe(
       id: id,
@@ -99,6 +104,9 @@ class Recipe {
           ? category ?? this.category
           : categoryOrNull as String?,
       ingredients: ingredients ?? this.ingredients,
+      photoPath: photoPathOrNull == _sentinel
+          ? photoPath
+          : photoPathOrNull as String?,
       createdAt: createdAt,
     );
   }
@@ -110,6 +118,7 @@ class Recipe {
         'tags': tags.map((t) => t.key).toList(),
         'category': category,
         'ingredients': ingredients.map((i) => i.toJson()).toList(),
+        'photoPath': photoPath,
         'createdAt': createdAt.toIso8601String(),
       };
 
@@ -130,6 +139,7 @@ class Recipe {
       tags: tags,
       category: json['category'] as String?,
       ingredients: ingredients,
+      photoPath: json['photoPath'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }

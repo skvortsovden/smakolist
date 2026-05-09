@@ -19,19 +19,6 @@ class MealSlotCard extends StatelessWidget {
     required this.onRemove,
   });
 
-  String get _timeHint {
-    switch (slot) {
-      case MealType.breakfast:
-        return S.slotTimeBreakfast;
-      case MealType.lunch:
-        return S.slotTimeLunch;
-      case MealType.dinner:
-        return S.slotTimeDinner;
-      case MealType.snack:
-        return S.slotTimeSnack;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,27 +32,13 @@ class MealSlotCard extends StatelessWidget {
           // Header row
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    slot.label,
-                    style: const TextStyle(
-                      fontFamily: 'FixelText',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Text(
-                  _timeHint,
-                  style: const TextStyle(
-                    fontFamily: 'FixelText',
-                    fontSize: 14,
-                    color: Colors.black38,
-                  ),
-                ),
-              ],
+            child: Text(
+              slot.label,
+              style: const TextStyle(
+                fontFamily: 'FixelText',
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
           ),
           // Logged recipes or placeholder
@@ -129,24 +102,28 @@ class MealSlotCard extends StatelessWidget {
             );
           }),
           // Add button
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.mediumImpact();
-              onAdd();
-            },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.black, width: 2)),
-              ),
-              child: const Text(
-                'Додати',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'FixelText',
-                  fontSize: 14,
-                  color: Colors.black,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                onAdd();
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 9),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black26, width: 1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'Додати',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'FixelText',
+                    fontSize: 13,
+                    color: Colors.black38,
+                  ),
                 ),
               ),
             ),

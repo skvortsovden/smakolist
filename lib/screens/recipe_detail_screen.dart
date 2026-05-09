@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/strings.dart';
@@ -57,6 +61,17 @@ class RecipeDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Photo
+                    if (current.photoPath != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: _PhotoImage(current.photoPath!),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     // Tags + category chips
                     if (current.tags.isNotEmpty || current.category != null) ...[
                       Wrap(
@@ -219,6 +234,58 @@ class RecipeDetailScreen extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PhotoImage extends StatefulWidget {
+  final String photoPath;
+
+  const _PhotoImage(this.photoPath);
+
+  @override
+  State<_PhotoImage> createState() => _PhotoImageState();
+}
+
+class _PhotoImageState extends State<_PhotoImage> {
+  String? _resolved;
+
+  @override
+  void initState() {
+    super.initState();
+    _resolve(widget.photoPath);
+  }
+
+  @override
+  void didUpdateWidget(_PhotoImage old) {
+    super.didUpdateWidget(old);
+    if (old.photoPath != widget.photoPath) _resolve(widget.photoPath);
+  }
+
+  Future<void> _resolve(String path) async {
+    final String abs;
+    if (path.startsWith('/')) {
+      abs = path;
+    } else {
+      final dir = await getApplicationDocumentsDirectory();
+      abs = p.join(dir.path, path);
+    }
+    if (mounted) setState(() => _resolved = abs);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_resolved == null) return const SizedBox.expand();
+    return Image.file(
+      File(_resolved!),
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: Colors.black.withValues(alpha: 0.04),
+        child: const Center(
+          child: Icon(Icons.image_not_supported_outlined,
+              color: Colors.black26, size: 40),
+        ),
       ),
     );
   }

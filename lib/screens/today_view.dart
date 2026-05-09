@@ -92,22 +92,38 @@ class _TodayViewState extends State<TodayView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              // Greeting
-              Text(
-                greeting,
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${S.todayDatePrefix} $dateStr',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.black54,
+              // Greeting row
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          greeting,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${S.todayDatePrefix} $dateStr.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.black54,
+                              ),
+                        ),
+                      ],
                     ),
+                  ),
+                  Image.asset('assets/smakolist-logo.png', height: 32, fit: BoxFit.contain),
+                ],
               ),
               const SizedBox(height: 24),
-              // Meal slots section label
-              _SectionLabel(S.todaySectionMeals),
-              const SizedBox(height: 12),
+              // Main header
+              Text(
+                'Що смачного?',
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              const SizedBox(height: 20),
               // Four meal slots
               ...MealType.values.map((slot) => Padding(
                     padding: const EdgeInsets.only(bottom: 12),

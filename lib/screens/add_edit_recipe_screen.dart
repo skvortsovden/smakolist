@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/strings.dart';
@@ -7,6 +13,8 @@ import '../models/ingredient.dart';
 import '../models/recipe.dart';
 import '../providers/app_provider.dart';
 import '../widgets/ingredient_picker_sheet.dart';
+
+const _nativePickerChannel = MethodChannel('com.texapp.smakolist/image_picker');
 
 class _IngredientEntry {
   RecipeIngredient ingredient;
@@ -36,8 +44,11 @@ class AddEditRecipeScreen extends StatefulWidget {
 class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descController;
+  late Set<MealType> _tags;
   String? _category;
   late List<_IngredientEntry> _entries;
+  String? _photoPath;     // relative: 'recipe_photos/file.jpg' (stored in Recipe)
+  String? _photoAbsPath;  // absolute: resolved at runtime for Image.file
   String? _nameError;
 
   bool get _isEdit => widget.recipe != null;
@@ -48,7 +59,10 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
     _nameController = TextEditingController(text: widget.recipe?.name ?? '');
     _descController =
         TextEditingController(text: widget.recipe?.description ?? '');
+    _tags = Set<MealType>.from(widget.recipe?.tags ?? []);
     _category = widget.recipe?.category;
+    _photoPath = widget.recipe?.photoPath;
+    if (_photoPath != null) _resolvePhotoPath(_photoPath!);
     _entries = (widget.recipe?.ingredients ?? [])
         .map((i) => _IngredientEntry(ingredient: i))
         .toList();
@@ -62,6 +76,117 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
       e.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _resolvePhotoPath(String relative) async {
+    final String abs;
+    if (relative.startsWith('/')) {
+      abs = relative;
+    } else {
+      final dir = await getApplicationDocumentsDirectory();
+      abs = p.join(dir.path, relative);
+    }
+    if (mounted) setState(() => _photoAbsPath = abs);
+  }
+
+  Future<XFile?> _pickFromSource(ImageSource source) async {
+    if (Platform.isIOS) {
+      final sourceArg = source == ImageSource.camera ? 'camera' : 'gallery';
+      final path = await _nativePickerChannel.invokeMethod<String>('pickImage', sourceArg);
+      return path != null ? XFile(path) : null;
+    }
+    return ImagePicker().pickImage(
+      source: source,
+      imageQuality: 90,
+      maxWidth: 1920,
+      maxHeight: 1920,
+    );
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    final picked = await _pickFromSource(source);
+    if (picked == null) return;
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picked.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Обрізати фото',
+          toolbarColor: Colors.black,
+          toolbarWidgetColor: Colors.white,
+          lockAspectRatio: true,
+          hideBottomControls: false,
+        ),
+        IOSUiSettings(
+          title: 'Обрізати фото',
+          aspectRatioLockEnabled: true,
+          resetAspectRatioEnabled: false,
+          rotateButtonsHidden: true,
+          rotateClockwiseButtonHidden: true,
+          aspectRatioPickerButtonHidden: true,
+        ),
+      ],
+    );
+    if (cropped == null) return;
+
+    final dir = await getApplicationDocumentsDirectory();
+    final photosDir = Directory(p.join(dir.path, 'recipe_photos'));
+    if (!photosDir.existsSync()) photosDir.createSync(recursive: true);
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final dest = p.join(photosDir.path, fileName);
+    await File(cropped.path).copy(dest);
+
+    if (mounted) {
+      setState(() {
+        _photoPath = p.join('recipe_photos', fileName);
+        _photoAbsPath = dest;
+      });
+    }
+  }
+
+  void _showPhotoSourceSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Галерея', style: TextStyle(fontFamily: 'FixelText', fontSize: 16)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickPhoto(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Камера', style: TextStyle(fontFamily: 'FixelText', fontSize: 16)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickPhoto(ImageSource.camera);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _toggleTag(MealType tag) {
+    HapticFeedback.mediumImpact();
+    setState(() {
+      if (_tags.contains(tag)) {
+        _tags.remove(tag);
+      } else {
+        _tags.add(tag);
+      }
+    });
   }
 
   void _addIngredient(String name) {
@@ -100,7 +225,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
     final controller = TextEditingController();
 
     void submit(String value) {
-      final v = value.trim();
+      final v = value.trim().toLowerCase();
       if (v.isEmpty) return;
       provider.addCustomCategory(v);
       if (mounted) setState(() => _category = v);
@@ -191,16 +316,20 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
       final updated = widget.recipe!.copyWith(
         name: name,
         descriptionOrNull: desc.isEmpty ? null : desc,
+        tags: _tags.toList(),
         categoryOrNull: _category,
         ingredients: ingredients,
+        photoPathOrNull: _photoPath,
       );
       provider.saveRecipe(updated);
     } else {
       final recipe = Recipe.create(
         name: name,
         description: desc.isEmpty ? null : desc,
+        tags: _tags.toList(),
         category: _category,
         ingredients: ingredients,
+        photoPath: _photoPath,
       );
       provider.saveRecipe(recipe);
     }
@@ -241,6 +370,70 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 20),
+                    // Photo picker
+                    GestureDetector(
+                      onTap: _showPhotoSourceSheet,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: _photoPath != null
+                              ? Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    if (_photoAbsPath != null)
+                                      Image.file(
+                                        File(_photoAbsPath!),
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          color: Colors.black.withValues(alpha: 0.04),
+                                        ),
+                                      ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: GestureDetector(
+                                        onTap: () => setState(() {
+                                          _photoPath = null;
+                                          _photoAbsPath = null;
+                                        }),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(alpha: 0.55),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          padding: const EdgeInsets.all(6),
+                                          child: const Icon(Icons.close, color: Colors.white, size: 18),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.04),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.add_photo_alternate_outlined, size: 36, color: Colors.black38),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Додати фото',
+                                        style: TextStyle(
+                                          fontFamily: 'FixelText',
+                                          fontSize: 14,
+                                          color: Colors.black38,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     // Name field
                     _SectionLabel(S.recipeSectionName),
@@ -331,31 +524,9 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                                 onTap: () => setState(() {
                                   _category = selected ? null : cat;
                                 }),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 140),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: selected
-                                        ? Colors.black
-                                        : Colors.white,
-                                    border: Border.all(
-                                        color: selected
-                                            ? Colors.black
-                                            : Colors.black38,
-                                        width: 1.5),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    cat,
-                                    style: TextStyle(
-                                      fontFamily: 'FixelText',
-                                      fontSize: 14,
-                                      color: selected
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
+                                child: _PillChip(
+                                  label: cat,
+                                  selected: selected,
                                 ),
                               ),
                             );
@@ -389,6 +560,28 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Meal type tags (optional)
+                    _SectionLabel(S.recipeSectionTags),
+                    const SizedBox(height: 8),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: MealType.values.map((t) {
+                          final isActive = _tags.contains(t);
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: GestureDetector(
+                              onTap: () => _toggleTag(t),
+                              child: _PillChip(
+                                label: t.label,
+                                selected: isActive,
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -565,6 +758,37 @@ class _IngredientRow extends StatelessWidget {
                   const BoxConstraints(minWidth: 32, minHeight: 32),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PillChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+
+  const _PillChip({required this.label, required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 140),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: selected ? Colors.black : Colors.white,
+        border: Border.all(
+          color: selected ? Colors.black : Colors.black38,
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontFamily: 'FixelText',
+          fontSize: 14,
+          color: selected ? Colors.white : Colors.black,
         ),
       ),
     );

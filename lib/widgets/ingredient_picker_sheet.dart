@@ -94,10 +94,10 @@ class _IngredientPickerSheetState extends State<IngredientPickerSheet> {
                 children: [
                   if (showAdd)
                     _IngredientRow(
-                      name: 'Додати «${_query.trim()}»',
+                      name: 'Додати «${_query.trim().toLowerCase()}»',
                       isAdd: true,
                       onTap: () {
-                        final name = _query.trim();
+                        final name = _query.trim().toLowerCase();
                         context.read<AppProvider>().addCustomIngredient(name);
                         widget.onSelected(name);
                         Navigator.of(context).pop();

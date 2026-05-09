@@ -121,6 +121,7 @@ class S {
   static String get settingsExportCancel => _s('settings_export_cancel');
   static String get settingsImportTitle => _s('settings_import_title');
   static String get settingsImportMessage => _s('settings_import_message');
+  static String get settingsImportTemplateBtn => _s('settings_import_template_btn');
   static String get settingsImportChoose => _s('settings_import_choose');
   static String get settingsImportCancel => _s('settings_import_cancel');
   static String get settingsImportDoneTitle => _s('settings_import_done_title');

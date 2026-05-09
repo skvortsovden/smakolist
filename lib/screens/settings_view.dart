@@ -43,7 +43,14 @@ class _SettingsViewState extends State<SettingsView> {
 
   // ── Export ────────────────────────────────────────────────────────────────
 
+  Rect _shareRect() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return const Rect.fromLTWH(0, 0, 1, 1);
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
   Future<void> _showExportDialog() async {
+    final shareRect = _shareRect();
     final action = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -85,17 +92,29 @@ class _SettingsViewState extends State<SettingsView> {
     if (action != 'save' || !mounted) return;
 
     final provider = context.read<AppProvider>();
-    final json = provider.buildJson();
+    final csv = provider.buildCsv();
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/smakolist_export.json');
-    await file.writeAsString(json, encoding: utf8);
-    await Share.shareXFiles([XFile(file.path)], text: 'Smakolist Export');
+    final file = File('${dir.path}/smakolist_recipes_${DateTime.now().millisecondsSinceEpoch ~/ 1000}.csv');
+    await file.writeAsString(csv, encoding: utf8);
+    await Share.shareXFiles([XFile(file.path)], sharePositionOrigin: shareRect);
   }
 
   // ── Import ────────────────────────────────────────────────────────────────
 
+  Future<void> _shareImportTemplate(Rect shareRect) async {
+    const csv = 'назва,категорія,прийом їжі,інгредієнти,опис\n'
+        'борщ,суп,"обід; вечеря","картопля 300 г; буряк 200 г; цибуля",традиційний борщ\n';
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/smakolist_template.csv');
+    await file.writeAsString(csv, encoding: utf8);
+    await Share.shareXFiles([XFile(file.path)], sharePositionOrigin: shareRect);
+  }
+
   Future<void> _showImportDialog() async {
-    final action = await showDialog<String>(
+    final shareRect = _shareRect();
+    String? action;
+
+    await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
@@ -110,8 +129,22 @@ class _SettingsViewState extends State<SettingsView> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              OutlinedButton(
+                onPressed: () => _shareImportTemplate(shareRect),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  side: const BorderSide(color: Colors.black, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                child: Text(S.settingsImportTemplateBtn),
+              ),
+              const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop('choose'),
+                onPressed: () {
+                  action = 'choose';
+                  Navigator.of(ctx).pop();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
@@ -137,7 +170,7 @@ class _SettingsViewState extends State<SettingsView> {
 
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['json'],
+      allowedExtensions: ['csv'],
     );
 
     if (result == null || result.files.isEmpty || !mounted) return;
@@ -163,7 +196,8 @@ class _SettingsViewState extends State<SettingsView> {
     }
 
     if (!mounted) return;
-    final err = context.read<AppProvider>().importJson(raw);
+    final err = context.read<AppProvider>().importCsv(raw);
+
     if (err != null) {
       await _showSimpleDialog(
         S.settingsImportErrorTitle,
@@ -182,6 +216,7 @@ class _SettingsViewState extends State<SettingsView> {
   // ── Clear data ────────────────────────────────────────────────────────────
 
   Future<void> _showClearDialog() async {
+    final shareRect = _shareRect();
     final action = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -235,12 +270,13 @@ class _SettingsViewState extends State<SettingsView> {
 
     if (action == 'export') {
       final provider = context.read<AppProvider>();
-      final json = provider.buildJson();
+      final csv = provider.buildCsv();
       try {
         final dir = await getTemporaryDirectory();
-        final file = File('${dir.path}/smakolist_export.json');
-        await file.writeAsString(json, encoding: utf8);
-        await Share.shareXFiles([XFile(file.path)], text: 'Smakolist Export');
+        final file = File('${dir.path}/smakolist_recipes_${DateTime.now().millisecondsSinceEpoch ~/ 1000}.csv');
+        await file.writeAsString(csv, encoding: utf8);
+        await Share.shareXFiles([XFile(file.path)], text: 'Smakolist Export',
+            sharePositionOrigin: shareRect);
       } catch (_) {
         if (!mounted) return;
         return;

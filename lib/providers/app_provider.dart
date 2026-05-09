@@ -369,6 +369,181 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
+  String buildCsv() {
+    final buf = StringBuffer();
+    buf.writeln(_csvRow(['назва', 'категорія', 'прийом їжі', 'інгредієнти', 'опис']));
+    for (final r in _recipes) {
+      final tags = r.tags.map((t) => t.label).join('; ');
+      final ingredients = r.ingredients.map((i) {
+        if (i.quantity != null) {
+          final qty = i.quantity! % 1 == 0
+              ? i.quantity!.toInt().toString()
+              : i.quantity!.toString();
+          return '${i.name} $qty ${i.unit}';
+        }
+        return i.name;
+      }).join('; ');
+      buf.writeln(_csvRow([
+        r.name,
+        r.category ?? '',
+        tags,
+        ingredients,
+        r.description ?? '',
+      ]));
+    }
+    return buf.toString();
+  }
+
+  static String _csvRow(List<String> fields) {
+    return fields.map((f) {
+      if (f.contains(',') || f.contains('"') || f.contains('\n') || f.contains('\r')) {
+        return '"${f.replaceAll('"', '""')}"';
+      }
+      return f;
+    }).join(',');
+  }
+
+  String? importCsv(String raw) {
+    try {
+      final rows = _parseCsvRows(raw);
+      if (rows.length < 2) return null;
+
+      for (final row in rows.skip(1)) {
+        if (row.every((f) => f.isEmpty)) continue;
+        final r = List<String>.from(row);
+        while (r.length < 5) {
+          r.add('');
+        }
+
+        final name = r[0].trim();
+        if (name.isEmpty) continue;
+
+        final category = r[1].trim().isEmpty ? null : r[1].trim().toLowerCase();
+
+        final tags = r[2]
+            .split(';')
+            .map((s) => s.trim().toLowerCase())
+            .where((s) => s.isNotEmpty)
+            .map((s) {
+              for (final t in MealType.values) {
+                if (t.label == s) return t;
+              }
+              return null;
+            })
+            .whereType<MealType>()
+            .toList();
+
+        final ingredients = r[3]
+            .split(';')
+            .map((s) => s.trim().toLowerCase())
+            .where((s) => s.isNotEmpty)
+            .map(_parseIngredientStr)
+            .toList();
+
+        final description = r[4].trim().isEmpty ? null : r[4].trim().toLowerCase();
+
+        final recipe = Recipe.create(
+          name: name,
+          description: description,
+          tags: tags,
+          category: category,
+          ingredients: ingredients,
+        );
+
+        final idx = _recipes.indexWhere(
+            (ex) => ex.name.toLowerCase() == name.toLowerCase());
+        if (idx >= 0) {
+          _recipes[idx] = _recipes[idx].copyWith(
+            name: recipe.name,
+            descriptionOrNull: description,
+            tags: recipe.tags,
+            categoryOrNull: category,
+            ingredients: recipe.ingredients,
+          );
+        } else {
+          _recipes.add(recipe);
+        }
+      }
+
+      _persistRecipes();
+      notifyListeners();
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  static RecipeIngredient _parseIngredientStr(String s) {
+    final parts = s.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 3) {
+      final unit = parts.last;
+      final qty = double.tryParse(parts[parts.length - 2]);
+      if (qty != null && kDefaultUnits.contains(unit)) {
+        return RecipeIngredient(
+          name: parts.take(parts.length - 2).join(' '),
+          quantity: qty,
+          unit: unit,
+        );
+      }
+    }
+    if (parts.length >= 2) {
+      final qty = double.tryParse(parts.last);
+      if (qty != null) {
+        return RecipeIngredient(
+          name: parts.take(parts.length - 1).join(' '),
+          quantity: qty,
+          unit: kDefaultUnits.first,
+        );
+      }
+    }
+    return RecipeIngredient(name: s.trim(), unit: kDefaultUnits.first);
+  }
+
+  static List<List<String>> _parseCsvRows(String raw) {
+    final rows = <List<String>>[];
+    for (final line
+        in raw.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n')) {
+      if (line.trim().isEmpty) continue;
+      rows.add(_parseCsvLine(line));
+    }
+    return rows;
+  }
+
+  static List<String> _parseCsvLine(String line) {
+    final fields = <String>[];
+    var i = 0;
+    while (i < line.length) {
+      if (line[i] == '"') {
+        i++;
+        final buf = StringBuffer();
+        while (i < line.length) {
+          if (line[i] == '"') {
+            if (i + 1 < line.length && line[i + 1] == '"') {
+              buf.write('"');
+              i += 2;
+            } else {
+              i++;
+              break;
+            }
+          } else {
+            buf.write(line[i]);
+            i++;
+          }
+        }
+        fields.add(buf.toString());
+        if (i < line.length && line[i] == ',') i++;
+      } else {
+        final start = i;
+        while (i < line.length && line[i] != ',') {
+          i++;
+        }
+        fields.add(line.substring(start, i));
+        if (i < line.length) i++;
+      }
+    }
+    return fields;
+  }
+
   String? importJson(String raw) {
     try {
       final map = jsonDecode(raw) as Map<String, dynamic>;
