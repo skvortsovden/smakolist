@@ -39,17 +39,8 @@ class _CalendarViewState extends State<CalendarView> {
     final provider = context.watch<AppProvider>();
     final today = DateTime.now();
 
-    final canEdit = _selectedDay != null && !_isFuture(_selectedDay!);
-
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: canEdit ? _BlackFab(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => EditDayScreen(date: _selectedDay!),
-          ),
-        ),
-      ) : null,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,105 +50,144 @@ class _CalendarViewState extends State<CalendarView> {
               child: Text(S.tabCalendar,
                   style: Theme.of(context).textTheme.headlineLarge),
             ),
-            TableCalendar(
-              locale: 'uk_UA',
-              firstDay: DateTime(2020),
-              lastDay: today,
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (d) => isSameDay(d, _selectedDay),
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              rowHeight: 44,
-              daysOfWeekHeight: 22,
-              availableGestures: AvailableGestures.horizontalSwipe,
-              onDaySelected: (selected, focused) {
-                if (!_isFuture(selected)) {
-                  setState(() {
-                    _selectedDay = selected;
-                    _focusedDay = focused;
-                  });
-                }
-              },
-              onPageChanged: (focused) {
-                setState(() => _focusedDay = focused);
-              },
-              calendarBuilders: CalendarBuilders(
-                markerBuilder: (ctx, day, events) {
-                  final key = AppProvider.dateKey(day);
-                  final log = provider.logs[key];
-                  if (log == null) return null;
-                  final hasMeals =
-                      log.slots.values.any((list) => list.isNotEmpty);
-                  final hasNote =
-                      log.note != null && log.note!.isNotEmpty;
-                  if (!hasMeals && !hasNote) return null;
-                  return Positioned(
-                    bottom: 3,
-                    child: hasMeals
-                        ? Container(
-                            width: 7,
-                            height: 7,
-                            decoration: const BoxDecoration(
-                              color: Colors.black,
-                              shape: BoxShape.circle,
-                            ),
-                          )
-                        : Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.black, width: 1.5),
-                            ),
-                          ),
-                  );
-                },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+              child: SizedBox(
+                height: 345,
+                child: TableCalendar(
+                  locale: 'uk_UA',
+                  firstDay: DateTime(2020),
+                  lastDay: today,
+                  focusedDay: _focusedDay,
+                  selectedDayPredicate: (d) => isSameDay(d, _selectedDay),
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  rowHeight: 44,
+                  daysOfWeekHeight: 22,
+                  availableGestures: AvailableGestures.horizontalSwipe,
+                  onDaySelected: (selected, focused) {
+                    if (!_isFuture(selected)) {
+                      setState(() {
+                        _selectedDay = selected;
+                        _focusedDay = focused;
+                      });
+                    }
+                  },
+                  onPageChanged: (focused) {
+                    setState(() => _focusedDay = focused);
+                  },
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (ctx, day, events) {
+                      final key = AppProvider.dateKey(day);
+                      final log = provider.logs[key];
+                      if (log == null) return null;
+                      final hasMeals =
+                          log.slots.values.any((list) => list.isNotEmpty);
+                      final hasNote =
+                          log.note != null && log.note!.isNotEmpty;
+                      if (!hasMeals && !hasNote) return null;
+                      return Positioned(
+                        bottom: 3,
+                        child: hasMeals
+                            ? Container(
+                                width: 7,
+                                height: 7,
+                                decoration: const BoxDecoration(
+                                  color: Colors.black,
+                                  shape: BoxShape.circle,
+                                ),
+                              )
+                            : Container(
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.black, width: 1.5),
+                                ),
+                              ),
+                      );
+                    },
+                  ),
+                  calendarStyle: CalendarStyle(
+                    outsideDaysVisible: false,
+                    cellMargin: const EdgeInsets.all(1),
+                    todayDecoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    todayTextStyle: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                    selectedDecoration: const BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedTextStyle: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                    defaultTextStyle: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                    weekendTextStyle: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                    disabledTextStyle: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontSize: 16,
+                      color: Colors.black26,
+                    ),
+                    outsideTextStyle: const TextStyle(
+                      fontFamily: 'FixelText',
+                      fontSize: 16,
+                      color: Colors.black26,
+                    ),
+                  ),
+                  daysOfWeekStyle: const DaysOfWeekStyle(
+                    weekdayStyle: TextStyle(
+                      fontFamily: 'FixelText',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+                    weekendStyle: TextStyle(
+                      fontFamily: 'FixelText',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                    headerMargin: EdgeInsets.zero,
+                    headerPadding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    titleTextStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(
+                          fontFamily: 'FixelText',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                    leftChevronIcon: const Icon(Icons.chevron_left,
+                        size: 20, color: Colors.black),
+                    rightChevronIcon: const Icon(Icons.chevron_right,
+                        size: 20, color: Colors.black),
+                  ),
+                  enabledDayPredicate: (day) => !_isFuture(day),
+                ),
               ),
-              calendarStyle: CalendarStyle(
-                outsideDaysVisible: false,
-                todayDecoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                todayTextStyle: const TextStyle(
-                  fontFamily: 'FixelText',
-                  color: Colors.black,
-                ),
-                selectedDecoration: const BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-                selectedTextStyle: const TextStyle(
-                  fontFamily: 'FixelText',
-                  color: Colors.white,
-                ),
-                defaultTextStyle: const TextStyle(
-                  fontFamily: 'FixelText',
-                  color: Colors.black,
-                ),
-                weekendTextStyle: const TextStyle(
-                  fontFamily: 'FixelText',
-                  color: Colors.black54,
-                ),
-                disabledTextStyle: const TextStyle(
-                  fontFamily: 'FixelText',
-                  color: Colors.black26,
-                ),
-              ),
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                titleTextStyle: TextStyle(
-                  fontFamily: 'FixelText',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
-                leftChevronIcon:
-                    Icon(Icons.chevron_left, size: 20, color: Colors.black),
-                rightChevronIcon:
-                    Icon(Icons.chevron_right, size: 20, color: Colors.black),
-              ),
-              enabledDayPredicate: (day) => !_isFuture(day),
             ),
             const Divider(thickness: 2, height: 2, color: Colors.black),
             Expanded(
@@ -191,7 +221,7 @@ class _DayDetailPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final dateStr = DateFormat('EEEE, d MMMM', 'uk').format(selectedDay!);
+    final dateStr = DateFormat('d MMMM yyyy', 'uk_UA').format(selectedDay!);
 
     if (isFuture) {
       return Center(
@@ -222,14 +252,73 @@ class _DayDetailPanel extends StatelessWidget {
 
     final key = AppProvider.dateKey(selectedDay!);
     final log = provider.logs[key];
+    final hasData = log != null &&
+        (log.slots.values.any((list) => list.isNotEmpty) ||
+            (log.note != null && log.note!.isNotEmpty));
+
+    if (!hasData) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              dateStr,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'FixelText',
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              S.calendarNoData,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'FixelText',
+                fontSize: 14,
+                color: Colors.black38,
+              ),
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => EditDayScreen(date: selectedDay!),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Додати',
+                  style: TextStyle(
+                    fontFamily: 'FixelText',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             dateStr,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontFamily: 'FixelText',
               fontWeight: FontWeight.w700,
@@ -237,17 +326,20 @@ class _DayDetailPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ...MealType.values.map((slot) {
-            final entries = log?.slots[slot] ?? [];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: MealSlotCard(
-                slot: slot,
-                entries: entries,
+          ...MealType.values.expand((slot) {
+            final entries = log.slots[slot] ?? [];
+            if (entries.isEmpty) return const <Widget>[];
+            return [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: MealSlotCard(
+                  slot: slot,
+                  entries: entries,
+                ),
               ),
-            );
+            ];
           }),
-          if (log?.note != null && log!.note!.isNotEmpty) ...[
+          if (log.note != null && log.note!.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               log.note!,
@@ -259,6 +351,31 @@ class _DayDetailPanel extends StatelessWidget {
               ),
             ),
           ],
+          const SizedBox(height: 16),
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => EditDayScreen(date: selectedDay!),
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                S.calendarBtnEdit,
+                style: const TextStyle(
+                  fontFamily: 'FixelText',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -266,23 +383,3 @@ class _DayDetailPanel extends StatelessWidget {
 
 }
 
-class _BlackFab extends StatelessWidget {
-  final VoidCallback onTap;
-  const _BlackFab({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: const Icon(Icons.add, color: Colors.white, size: 24),
-      ),
-    );
-  }
-}
