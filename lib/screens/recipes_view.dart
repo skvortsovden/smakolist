@@ -193,16 +193,6 @@ class _RecipeCard extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  if (recipe.tags.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: recipe.tags
-                          .map((t) => _SmallChip(label: t.label))
-                          .toList(),
-                    ),
-                  ],
                   if (recipe.description != null &&
                       recipe.description!.isNotEmpty) ...[
                     const SizedBox(height: 6),

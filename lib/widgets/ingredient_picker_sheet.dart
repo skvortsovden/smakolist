@@ -34,15 +34,19 @@ class _IngredientPickerSheetState extends State<IngredientPickerSheet> {
     final exactMatch = all.any((i) => i.toLowerCase() == _query.trim().toLowerCase());
     final showAdd = _query.trim().isNotEmpty && !exactMatch;
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+    final mq = MediaQuery.of(context);
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: mq.size.height - mq.padding.top - 48,
+      ),
+      child: Padding(
+      padding: EdgeInsets.only(bottom: mq.viewInsets.bottom),
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             // Header
             Padding(
@@ -114,6 +118,7 @@ class _IngredientPickerSheetState extends State<IngredientPickerSheet> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

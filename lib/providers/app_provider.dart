@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/ingredient.dart';
 import '../models/meal_log.dart';
 import '../models/recipe.dart';
+import '../models/shopping_list.dart';
 import '../services/notification_service.dart';
 
 class ReminderConfig {
@@ -24,6 +25,7 @@ class AppProvider extends ChangeNotifier {
   String _username = '';
   List<String> _customIngredients = [];
   List<String> _customCategories = [];
+  List<ShoppingList> _shoppingLists = [];
 
   ReminderConfig _breakfastReminder =
       const ReminderConfig(enabled: false, time: TimeOfDay(hour: 8, minute: 0));
@@ -44,6 +46,7 @@ class AppProvider extends ChangeNotifier {
   static const _dinnerReminderKey = 'smakolist_reminder_dinner';
   static const _customIngredientsKey = 'smakolist_custom_ingredients';
   static const _customCategoriesKey = 'smakolist_custom_categories';
+  static const _shoppingListsKey = 'smakolist_shopping_lists';
 
   // ── Getters ──────────────────────────────────────────────────────────────
 
@@ -60,6 +63,7 @@ class AppProvider extends ChangeNotifier {
 
   List<String> get customIngredients => List.unmodifiable(_customIngredients);
   List<String> get customCategories => List.unmodifiable(_customCategories);
+  List<ShoppingList> get shoppingLists => List.unmodifiable(_shoppingLists);
 
   List<String> get allIngredients => [
         ...kDefaultIngredients,
@@ -120,6 +124,16 @@ class AppProvider extends ChangeNotifier {
       if (rawCategories != null) {
         try {
           _customCategories = List<String>.from(jsonDecode(rawCategories) as List);
+        } catch (_) {}
+      }
+
+      final rawShopping = _prefs!.getString(_shoppingListsKey);
+      if (rawShopping != null) {
+        try {
+          final list = jsonDecode(rawShopping) as List<dynamic>;
+          _shoppingLists = list
+              .map((e) => ShoppingList.fromJson(e as Map<String, dynamic>))
+              .toList();
         } catch (_) {}
       }
     } catch (e) {
@@ -333,11 +347,43 @@ class AppProvider extends ChangeNotifier {
   Future<void> clearAllData() async {
     _recipes = [];
     _logs = {};
+    _shoppingLists = [];
     if (_prefs != null) {
       await _prefs!.remove(_recipesKey);
       await _prefs!.remove(_logsKey);
+      await _prefs!.remove(_shoppingListsKey);
     }
     notifyListeners();
+  }
+
+  // ── Shopping lists ────────────────────────────────────────────────────────
+
+  void addShoppingList(ShoppingList list) {
+    _shoppingLists.insert(0, list);
+    _saveShoppingLists();
+    notifyListeners();
+  }
+
+  void updateShoppingList(ShoppingList list) {
+    final idx = _shoppingLists.indexWhere((l) => l.id == list.id);
+    if (idx >= 0) {
+      _shoppingLists[idx] = list;
+      _saveShoppingLists();
+      notifyListeners();
+    }
+  }
+
+  void deleteShoppingList(String id) {
+    _shoppingLists.removeWhere((l) => l.id == id);
+    _saveShoppingLists();
+    notifyListeners();
+  }
+
+  void _saveShoppingLists() {
+    _prefs?.setString(
+      _shoppingListsKey,
+      jsonEncode(_shoppingLists.map((l) => l.toJson()).toList()),
+    );
   }
 
   // ── Custom ingredients & categories ──────────────────────────────────────

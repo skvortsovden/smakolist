@@ -8,15 +8,15 @@ import '../models/recipe.dart';
 class MealSlotCard extends StatelessWidget {
   final MealType slot;
   final List<MealEntry> entries;
-  final VoidCallback onAdd;
-  final void Function(int index) onRemove;
+  final VoidCallback? onAdd;
+  final void Function(int index)? onRemove;
 
   const MealSlotCard({
     super.key,
     required this.slot,
     required this.entries,
-    required this.onAdd,
-    required this.onRemove,
+    this.onAdd,
+    this.onRemove,
   });
 
   @override
@@ -59,12 +59,41 @@ class MealSlotCard extends StatelessWidget {
           ...entries.asMap().entries.map((e) {
             final index = e.key;
             final entry = e.value;
+            final row = Padding(
+              padding: EdgeInsets.fromLTRB(12, 3, onRemove != null ? 8 : 12, 3),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      entry.recipeName,
+                      style: const TextStyle(
+                        fontFamily: 'FixelText',
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  if (onRemove != null)
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        onRemove!(index);
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(Icons.close, size: 14, color: Colors.black38),
+                      ),
+                    ),
+                ],
+              ),
+            );
+            if (onRemove == null) return row;
             return Dismissible(
               key: Key('${slot.key}-$index-${entry.loggedAt.millisecondsSinceEpoch}'),
               direction: DismissDirection.endToStart,
               onDismissed: (_) {
                 HapticFeedback.mediumImpact();
-                onRemove(index);
+                onRemove!(index);
               },
               background: Container(
                 alignment: Alignment.centerRight,
@@ -72,62 +101,38 @@ class MealSlotCard extends StatelessWidget {
                 color: Colors.black12,
                 child: const Icon(Icons.delete_outline, color: Colors.black54),
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 3, 8, 3),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        entry.recipeName,
-                        style: const TextStyle(
-                          fontFamily: 'FixelText',
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        HapticFeedback.mediumImpact();
-                        onRemove(index);
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(Icons.close, size: 14, color: Colors.black38),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: row,
             );
           }),
-          // Add button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.mediumImpact();
-                onAdd();
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 9),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black26, width: 1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'Додати',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'FixelText',
-                    fontSize: 13,
-                    color: Colors.black38,
+          if (onAdd != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+              child: GestureDetector(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  onAdd!();
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 9),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black26, width: 1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    'Додати',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'FixelText',
+                      fontSize: 13,
+                      color: Colors.black38,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            )
+          else
+            const SizedBox(height: 10),
         ],
       ),
     );

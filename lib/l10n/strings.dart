@@ -37,6 +37,43 @@ class S {
   static String get onboardingGuideText => _s('onboarding_guide_text');
   static String get onboardingGuideBtn => _s('onboarding_guide_btn');
 
+  // ── Shopping ─────────────────────────────────────────────────────────────
+  static String get tabShopping => _s('tab_shopping');
+  static String get shoppingTitle => _s('shopping_title');
+  static String get shoppingEmptyTitle => _s('shopping_empty_title');
+  static String get shoppingEmptySubtitle => _s('shopping_empty_subtitle');
+  static String get shoppingEmptyBtn => _s('shopping_empty_btn');
+  static String get shoppingNewList => _s('shopping_new_list');
+  static String get shoppingEditList => _s('shopping_edit_list');
+  static String get shoppingNameSection => _s('shopping_name_section');
+  static String get shoppingNameHint => _s('shopping_name_hint');
+  static String get shoppingItemsSection => _s('shopping_items_section');
+  static String shoppingListsCount(int n) {
+    if (n == 1) return '$n ${_s('shopping_lists_count_suffix_1')}';
+    if (n >= 2 && n <= 4) return '$n ${_s('shopping_lists_count_suffix_few')}';
+    return '$n ${_s('shopping_lists_count_suffix_many')}';
+  }
+  static String shoppingItemsCount(int n) =>
+      _s('shopping_items_count').replaceFirst('{n}', '$n');
+  static String shoppingCheckedOf(int done, int total) => _s('shopping_checked_of')
+      .replaceFirst('{done}', '$done')
+      .replaceFirst('{total}', '$total');
+  static String get shoppingAddRecipeBtn => _s('shopping_add_recipe_btn');
+  static String get shoppingPasteBtn => _s('shopping_paste_btn');
+  static String get shoppingAddItemBtn => _s('shopping_add_item_btn');
+  static String get shoppingAddItemHint => _s('shopping_add_item_hint');
+  static String get shoppingPickRecipesTitle => _s('shopping_pick_recipes_title');
+  static String shoppingPickRecipesBtn(int n) =>
+      _s('shopping_pick_recipes_btn').replaceFirst('{n}', '$n');
+  static String get shoppingCopyClipboardBtn => _s('shopping_copy_clipboard_btn');
+  static String get shoppingCopiedSnack => _s('shopping_copied_snack');
+  static String get shoppingDuplicateBtn => _s('shopping_duplicate_btn');
+  static String get shoppingRemoveBtn => _s('shopping_remove_btn');
+  static String get shoppingDeleteTitle => _s('shopping_delete_title');
+  static String get shoppingDeleteBody => _s('shopping_delete_body');
+  static String get shoppingDeleteConfirm => _s('shopping_delete_confirm');
+  static String get shoppingDeleteCancel => _s('shopping_delete_cancel');
+
   // ── Today ────────────────────────────────────────────────────────────────
   static String greetingNamed(String name) =>
       _s('today_greeting_named').replaceFirst('{name}', name);

@@ -10,8 +10,8 @@ import 'providers/app_provider.dart';
 import 'screens/calendar_view.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/recipes_view.dart';
-import 'screens/report_view.dart';
 import 'screens/settings_view.dart';
+import 'screens/shopping_lists_view.dart';
 import 'screens/splash_screen.dart';
 import 'screens/today_view.dart';
 import 'services/notification_service.dart';
@@ -181,7 +181,7 @@ class _MainScreenState extends State<MainScreen> {
           CalendarView(key: ValueKey(_calendarKey)),
           const RecipesView(),
           const TodayView(),
-          const ReportView(),
+          const ShoppingListsView(),
           const SettingsView(),
         ],
       ),
@@ -226,9 +226,9 @@ class _MainScreenState extends State<MainScreen> {
                 label: S.tabToday,
               ),
               BottomNavigationBarItem(
-                icon: const Icon(Icons.bar_chart_outlined),
-                activeIcon: const Icon(Icons.bar_chart),
-                label: S.tabReport,
+                icon: const Icon(Icons.shopping_cart_outlined),
+                activeIcon: const Icon(Icons.shopping_cart),
+                label: S.tabShopping,
               ),
               BottomNavigationBarItem(
                 icon: const Icon(Icons.tune_outlined),

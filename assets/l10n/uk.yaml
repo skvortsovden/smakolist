@@ -28,8 +28,8 @@ splash_title: Смаколист
 today_greeting_named: "Вітаю, {name}!"
 today_greeting_default: "Вітаю, друже!"
 today_date_prefix: Сьогодні
-today_section_meals: ПРИЙОМИ ЇЖІ
-today_section_note: НОТАТКА
+today_section_meals: Прийоми їжі
+today_section_note: Нотатка
 today_note_hint: "Ще якісь смаколики сьогодні?"
 today_slot_breakfast: Сніданок
 today_slot_lunch: Обід
@@ -77,13 +77,44 @@ recipe_delete_cancel: Скасувати
 # ── Add / Edit recipe ────────────────────────────────────────────────────────
 recipe_add_title: Новий рецепт
 recipe_edit_title: Редагувати
-recipe_section_name: НАЗВА
+recipe_section_name: Назва
 recipe_name_hint: "Назва страви…"
 recipe_name_error_duplicate: "Назва вже існує"
 recipe_section_desc: "Короткий опис"
 recipe_desc_hint: "Короткий опис"
-recipe_section_tags: ПРИЙОМ ЇЖІ
+recipe_section_tags: Прийом їжі
 recipe_btn_save: Зберегти
+
+# ── Shopping lists ────────────────────────────────────────────────────────────
+tab_shopping: Списки
+shopping_title: Списки продуктів
+shopping_empty_title: Немає списків
+shopping_empty_subtitle: "Створи свій перший список"
+shopping_empty_btn: "+ Новий список"
+shopping_new_list: Новий список
+shopping_edit_list: Редагувати список
+shopping_name_section: НАЗВА
+shopping_name_hint: "Назва списку…"
+shopping_items_section: ПОЗИЦІЇ
+shopping_lists_count_suffix_1: список
+shopping_lists_count_suffix_few: списки
+shopping_lists_count_suffix_many: списків
+shopping_items_count: "{n} позицій"
+shopping_checked_of: "{done} з {total}"
+shopping_add_recipe_btn: Додати з рецепту
+shopping_paste_btn: Вставити позиції
+shopping_add_item_btn: Додати позицію
+shopping_add_item_hint: "Назва позиції…"
+shopping_pick_recipes_title: Оберіть рецепти
+shopping_pick_recipes_btn: "Додати ({n})"
+shopping_copy_clipboard_btn: Копіювати список
+shopping_copied_snack: Список скопійовано
+shopping_duplicate_btn: Дублювати список
+shopping_remove_btn: Видалити список
+shopping_delete_title: "Видалити список?"
+shopping_delete_body: "Список буде видалено безповоротно."
+shopping_delete_confirm: Видалити
+shopping_delete_cancel: Скасувати
 
 # ── Report view ───────────────────────────────────────────────────────────────
 report_title: Звіт
@@ -91,25 +122,25 @@ report_period_week: Тиждень
 report_period_month: Місяць
 report_period_year: Рік
 report_no_data: Недостатньо даних за цей період
-report_section_fill: ЗАПИСИ
+report_section_fill: Записи
 report_fill_days: "{n}/{m} днів"
-report_section_streak: СЕРІЯ
+report_section_streak: Серія
 report_streak_current: "Поспіль: {n} дн."
 report_streak_longest: "Найдовший: {n} дн."
-report_section_top: ТОП СТРАВ
+report_section_top: Топ страв
 report_times_suffix: разів
-report_section_slots: ПРИЙОМИ ЇЖІ
+report_section_slots: Прийоми їжі
 
 # ── Settings ──────────────────────────────────────────────────────────────────
 settings_title: Налаштування
-settings_name_label: "ЯК ДО ТЕБЕ ЗВЕРТАТИСЯ?"
+settings_name_label: "Як до тебе звертатися?"
 settings_name_hint: "Введи ім'я тут…"
-settings_section_reminders: НАГАДУВАННЯ
-settings_reminder_breakfast: сніданок
-settings_reminder_lunch: обід
-settings_reminder_dinner: вечеря
+settings_section_reminders: Нагадування
+settings_reminder_breakfast: Сніданок
+settings_reminder_lunch: Обід
+settings_reminder_dinner: Вечеря
 settings_reminder_time_label: Час
-settings_section_data: ДАНІ
+settings_section_data: Дані
 settings_export_btn: Експортувати дані
 settings_export_icon: download_outlined
 settings_import_btn: Імпортувати дані

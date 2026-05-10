@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../l10n/strings.dart';
+import '../models/meal_log.dart';
 import '../models/recipe.dart';
 import '../providers/app_provider.dart';
+import '../widgets/meal_slot_card.dart';
 import 'edit_day_screen.dart';
 
 class CalendarView extends StatefulWidget {
@@ -37,11 +39,26 @@ class _CalendarViewState extends State<CalendarView> {
     final provider = context.watch<AppProvider>();
     final today = DateTime.now();
 
+    final canEdit = _selectedDay != null && !_isFuture(_selectedDay!);
+
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: canEdit ? _BlackFab(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EditDayScreen(date: _selectedDay!),
+          ),
+        ),
+      ) : null,
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+              child: Text(S.tabCalendar,
+                  style: Theme.of(context).textTheme.headlineLarge),
+            ),
             TableCalendar(
               locale: 'uk_UA',
               firstDay: DateTime(2020),
@@ -174,7 +191,7 @@ class _DayDetailPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final dateStr = DateFormat('d MMMM yyyy', 'uk').format(selectedDay!);
+    final dateStr = DateFormat('EEEE, d MMMM', 'uk').format(selectedDay!);
 
     if (isFuture) {
       return Center(
@@ -205,13 +222,11 @@ class _DayDetailPanel extends StatelessWidget {
 
     final key = AppProvider.dateKey(selectedDay!);
     final log = provider.logs[key];
-    final hasData =
-        log != null && !log.isEmpty;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             dateStr,
@@ -220,75 +235,28 @@ class _DayDetailPanel extends StatelessWidget {
               fontWeight: FontWeight.w700,
               fontSize: 16,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
-          if (!hasData) ...[
+          const SizedBox(height: 16),
+          ...MealType.values.map((slot) {
+            final entries = log?.slots[slot] ?? [];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: MealSlotCard(
+                slot: slot,
+                entries: entries,
+              ),
+            );
+          }),
+          if (log?.note != null && log!.note!.isNotEmpty) ...[
+            const SizedBox(height: 4),
             Text(
-              S.calendarNoData,
+              log.note!,
               style: const TextStyle(
                 fontFamily: 'FixelText',
                 fontSize: 14,
-                color: Colors.black38,
+                color: Colors.black54,
+                fontStyle: FontStyle.italic,
               ),
-            ),
-            const SizedBox(height: 16),
-            _OutlinedActionButton(
-              label: S.calendarBtnAdd,
-              onTap: () => _openEdit(context),
-            ),
-          ] else ...[
-            // Show slot data
-            ...MealType.values.where((t) {
-              final entries = log.slots[t];
-              return entries != null && entries.isNotEmpty;
-            }).map((t) {
-              final entries = log.slots[t]!;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      t.label.toUpperCase(),
-                      style: const TextStyle(
-                        fontFamily: 'FixelText',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 10,
-                        letterSpacing: 1.2,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ...entries.map(
-                      (e) => Text(
-                        e.recipeName,
-                        style: const TextStyle(
-                          fontFamily: 'FixelText',
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-            if (log.note != null && log.note!.isNotEmpty) ...[
-              Text(
-                log.note!,
-                style: const TextStyle(
-                  fontFamily: 'FixelText',
-                  fontSize: 14,
-                  color: Colors.black54,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-            ],
-            _OutlinedActionButton(
-              label: S.calendarBtnEdit,
-              onTap: () => _openEdit(context),
             ),
           ],
         ],
@@ -296,38 +264,24 @@ class _DayDetailPanel extends StatelessWidget {
     );
   }
 
-  void _openEdit(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => EditDayScreen(date: selectedDay!),
-      ),
-    );
-  }
 }
 
-class _OutlinedActionButton extends StatelessWidget {
-  final String label;
+class _BlackFab extends StatelessWidget {
   final VoidCallback onTap;
-
-  const _OutlinedActionButton({required this.label, required this.onTap});
+  const _BlackFab({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.black,
-        side: const BorderSide(color: Colors.black, width: 2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontFamily: 'FixelText',
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(14),
         ),
+        child: const Icon(Icons.add, color: Colors.white, size: 24),
       ),
     );
   }
