@@ -19,6 +19,31 @@
       padding: 40px 24px;
     }
 
+    .lang-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid #000;
+      background: #fff;
+      color: #000;
+      transition: all 0.15s;
+    }
+
+    .lang-btn.active {
+      background: #000;
+      color: #fff;
+    }
+
     .logo {
       width: 80px;
       height: 80px;
@@ -36,7 +61,6 @@
     .tagline {
       font-size: 16px;
       color: #555;
-      margin-bottom: 0;
     }
 
     .buttons {
@@ -62,12 +86,7 @@
     }
 
     .btn:hover { opacity: 0.8; }
-
-    .btn-ios {
-      background: #000;
-      color: #fff;
-    }
-
+    .btn-ios { background: #000; color: #fff; }
     .btn svg { flex-shrink: 0; }
 
     .description {
@@ -148,15 +167,24 @@
       color: #ccc;
       padding-bottom: 32px;
     }
+
+    [data-lang] { display: none; }
   </style>
 </head>
 <body>
 
+  <div class="lang-switch">
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-uk" onclick="setLang('uk')">UK</button>
+  </div>
+
   <img class="logo" src="icon.png" alt="Smakolist" />
   <h1>Smakolist</h1>
-  <p class="tagline">your tasty list</p>
 
-  <div class="description">
+  <p class="tagline" data-lang="en">your tasty list</p>
+  <p class="tagline" data-lang="uk">твій смачний список</p>
+
+  <div class="description" data-lang="en">
     <h2><em>Simple.<br>Personal.<br>Private.</em></h2>
     <p>Smakolist is a free app for tracking your daily meals. Add your own recipes, log what you eat, and review your habits over time. All data is stored only on your device — no account needed, no data collected, no internet required.</p>
     <p>What you can do:</p>
@@ -165,7 +193,20 @@
       <li><strong>Today</strong> — log meals for breakfast, lunch, dinner and snacks</li>
       <li><strong>Calendar</strong> — review and edit entries for past days</li>
       <li><strong>Lists</strong> — build shopping lists from recipes or manually</li>
-<li><strong>Reminders</strong> — get notified at meal times</li>
+      <li><strong>Reminders</strong> — get notified at meal times</li>
+    </ul>
+  </div>
+
+  <div class="description" data-lang="uk">
+    <h2><em>Простий.<br>Особистий.<br>Приватний.</em></h2>
+    <p>Смаколист — безкоштовний додаток для відстеження щоденного харчування. Додавай власні рецепти, записуй що їси та переглядай звички з часом. Усі дані зберігаються лише на твоєму пристрої — без реєстрації, без збору даних, без інтернету.</p>
+    <p>Що можна робити:</p>
+    <ul>
+      <li><strong>Рецепти</strong> — додавай та керуй власними стравами</li>
+      <li><strong>Сьогодні</strong> — записуй сніданок, обід, вечерю та перекуси</li>
+      <li><strong>Календар</strong> — переглядай та редагуй записи за минулі дні</li>
+      <li><strong>Списки</strong> — створюй списки покупок з рецептів або вручну</li>
+      <li><strong>Нагадування</strong> — отримуй сповіщення під час прийомів їжі</li>
     </ul>
   </div>
 
@@ -179,19 +220,49 @@
   </div>
 
   <div class="privacy" id="privacy">
-    <h3>Privacy Policy</h3>
-    <p>Last updated: May 10, 2026</p>
-    <h4>Data Collection</h4>
-    <p>Smakolist does not collect, store, or share any personal data with third parties.</p>
-    <h4>Data Storage</h4>
-    <p>All data (recipes, meal logs, shopping lists, settings) is stored exclusively on your device. Nothing is sent to external servers.</p>
-    <h4>Notifications</h4>
-    <p>If you enable meal reminders, they are scheduled locally by iOS. No information is transmitted to any external service.</p>
-    <h4>Contact</h4>
-    <p>Questions about privacy? Write to: <a href="mailto:denys.skvortsov.dev@gmail.com">denys.skvortsov.dev@gmail.com</a></p>
+    <h3 data-lang="en">Privacy Policy</h3>
+    <h3 data-lang="uk">Політика конфіденційності</h3>
+
+    <p data-lang="en">Last updated: May 10, 2026</p>
+    <p data-lang="uk">Останнє оновлення: 10 травня 2026 р.</p>
+
+    <h4 data-lang="en">Data Collection</h4>
+    <h4 data-lang="uk">Збір даних</h4>
+    <p data-lang="en">Smakolist does not collect, store, or share any personal data with third parties.</p>
+    <p data-lang="uk">Додаток «Смаколист» не збирає, не зберігає та не передає жодних персональних даних третім особам.</p>
+
+    <h4 data-lang="en">Data Storage</h4>
+    <h4 data-lang="uk">Зберігання даних</h4>
+    <p data-lang="en">All data (recipes, meal logs, shopping lists, settings) is stored exclusively on your device. Nothing is sent to external servers.</p>
+    <p data-lang="uk">Усі дані (рецепти, записи про їжу, списки покупок, налаштування) зберігаються виключно локально на вашому пристрої. Жодні дані не надсилаються на зовнішні сервери.</p>
+
+    <h4 data-lang="en">Notifications</h4>
+    <h4 data-lang="uk">Сповіщення</h4>
+    <p data-lang="en">If you enable meal reminders, they are scheduled locally by iOS. No information is transmitted to any external service.</p>
+    <p data-lang="uk">Якщо ви увімкнули нагадування про прийоми їжі, вони обробляються локально операційною системою iOS. Жодна інформація не передається зовнішнім сервісам.</p>
+
+    <h4 data-lang="en">Contact</h4>
+    <h4 data-lang="uk">Контакт</h4>
+    <p data-lang="en">Questions about privacy? Write to: <a href="mailto:denys.skvortsov.dev@gmail.com">denys.skvortsov.dev@gmail.com</a></p>
+    <p data-lang="uk">Є запитання щодо конфіденційності? Напишіть на: <a href="mailto:denys.skvortsov.dev@gmail.com">denys.skvortsov.dev@gmail.com</a></p>
   </div>
 
   <footer>© 2026 Denys Skvortsov</footer>
+
+  <script>
+    function setLang(lang) {
+      document.querySelectorAll('[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? '' : 'none';
+      });
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-uk').classList.toggle('active', lang === 'uk');
+      localStorage.setItem('lang', lang);
+    }
+
+    const saved = localStorage.getItem('lang');
+    const browser = navigator.language.startsWith('uk') ? 'uk' : 'en';
+    setLang(saved || browser);
+  </script>
 
 </body>
 </html>
