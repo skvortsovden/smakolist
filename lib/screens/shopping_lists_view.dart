@@ -105,20 +105,23 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          OutlinedButton(
-            onPressed: onCreateTap,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.black,
-              side: const BorderSide(color: Colors.black, width: 2),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: Text(
-              S.shoppingEmptyBtn,
-              style: const TextStyle(
-                fontFamily: 'FixelText',
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+          GestureDetector(
+            onTap: onCreateTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                S.shoppingEmptyBtn,
+                style: const TextStyle(
+                  fontFamily: 'FixelText',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),

@@ -295,7 +295,7 @@ class _EmptyItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 48, horizontal: 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -303,7 +303,7 @@ class _EmptyItems extends StatelessWidget {
           Icon(Icons.checklist_outlined, size: 48, color: Colors.black12),
           SizedBox(height: 16),
           Text(
-            'Список порожній',
+            S.shoppingListEmptyTitle,
             style: TextStyle(
               fontFamily: 'FixelDisplay',
               fontWeight: FontWeight.w700,
@@ -313,7 +313,7 @@ class _EmptyItems extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            'Додай позиції через кнопку редагування',
+            S.shoppingListEmptyBody,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'FixelText',

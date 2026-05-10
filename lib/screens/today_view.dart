@@ -32,6 +32,68 @@ class _TodayViewState extends State<TodayView> {
     super.dispose();
   }
 
+  void _showGuide(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              S.onboardingGuideTitle,
+              style: const TextStyle(
+                fontFamily: 'FixelDisplay',
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              S.onboardingGuideText,
+              style: const TextStyle(
+                fontFamily: 'FixelText',
+                fontSize: 15,
+                height: 1.6,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  S.onboardingGuideBtn,
+                  style: const TextStyle(
+                    fontFamily: 'FixelText',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _openPicker(BuildContext context, MealType slot) {
     showModalBottomSheet(
       context: context,
@@ -81,7 +143,7 @@ class _TodayViewState extends State<TodayView> {
     final username = provider.username;
     final greeting =
         username.isEmpty ? S.greetingDefault : S.greetingNamed(username);
-    final dateStr = DateFormat('EEEE, d MMMM', 'uk').format(today);
+    final dateStr = DateFormat('EEEE, d MMMM', S.locale).format(today);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -114,13 +176,16 @@ class _TodayViewState extends State<TodayView> {
                       ],
                     ),
                   ),
-                  Image.asset('assets/smakolist-logo.png', height: 32, fit: BoxFit.contain),
+                  GestureDetector(
+                    onTap: () => _showGuide(context),
+                    child: Image.asset('assets/smakolist-logo.png', height: 32, fit: BoxFit.contain),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
               // Main header
               Text(
-                'Що смачного?',
+                S.todayMealsTitle,
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: 20),
@@ -179,7 +244,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
         fontFamily: 'FixelText',
         fontWeight: FontWeight.w700,

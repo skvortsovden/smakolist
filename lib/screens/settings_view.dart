@@ -102,8 +102,8 @@ class _SettingsViewState extends State<SettingsView> {
   // ── Import ────────────────────────────────────────────────────────────────
 
   Future<void> _shareImportTemplate(Rect shareRect) async {
-    const csv = 'назва,категорія,прийом їжі,інгредієнти,опис\n'
-        'борщ,суп,"обід; вечеря","картопля 300 г; буряк 200 г; цибуля",традиційний борщ\n';
+    const csv = 'name,category,meal_type,ingredients,description\n'
+        'borscht,soup,"lunch; dinner","potato 300 g; beetroot 200 g; onion",traditional borscht\n';
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/smakolist_template.csv');
     await file.writeAsString(csv, encoding: utf8);
@@ -375,12 +375,30 @@ class _SettingsViewState extends State<SettingsView> {
                     context.read<AppProvider>().setUsername(v.trim()),
               ),
               const SizedBox(height: 24),
+              // Language
+              _SectionLabel(S.settingsLanguageLabel),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _LangButton(
+                    label: S.settingsLanguageUk,
+                    selected: provider.language == 'uk',
+                    onTap: () => context.read<AppProvider>().setLanguage('uk'),
+                  ),
+                  const SizedBox(width: 8),
+                  _LangButton(
+                    label: S.settingsLanguageEn,
+                    selected: provider.language == 'en',
+                    onTap: () => context.read<AppProvider>().setLanguage('en'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
               // Reminders
               _SectionLabel(S.settingsSectionReminders),
               const SizedBox(height: 8),
               _ReminderBlock(
                 label: S.settingsReminderBreakfast,
-                timeHint: S.slotTimeBreakfast,
                 config: provider.breakfastReminder,
                 onToggle: (enabled) => context
                     .read<AppProvider>()
@@ -394,7 +412,6 @@ class _SettingsViewState extends State<SettingsView> {
               const SizedBox(height: 8),
               _ReminderBlock(
                 label: S.settingsReminderLunch,
-                timeHint: S.slotTimeLunch,
                 config: provider.lunchReminder,
                 onToggle: (enabled) => context
                     .read<AppProvider>()
@@ -408,7 +425,6 @@ class _SettingsViewState extends State<SettingsView> {
               const SizedBox(height: 8),
               _ReminderBlock(
                 label: S.settingsReminderDinner,
-                timeHint: S.slotTimeDinner,
                 config: provider.dinnerReminder,
                 onToggle: (enabled) => context
                     .read<AppProvider>()
@@ -451,9 +467,9 @@ class _SettingsViewState extends State<SettingsView> {
                       height: 56,
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Смаколист',
-                      style: TextStyle(
+                    Text(
+                      S.appTitle,
+                      style: const TextStyle(
                         fontFamily: 'FixelText',
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -470,7 +486,7 @@ class _SettingsViewState extends State<SettingsView> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Версія $_appVersion',
+                      S.settingsVersion(_appVersion),
                       style: const TextStyle(
                         fontFamily: 'FixelText',
                         fontSize: 13,
@@ -505,13 +521,52 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
         fontFamily: 'FixelText',
         fontWeight: FontWeight.w700,
         fontSize: 10,
         letterSpacing: 1.2,
         color: Colors.black54,
+      ),
+    );
+  }
+}
+
+class _LangButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _LangButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? Colors.black : Colors.white,
+            border: Border.all(color: Colors.black, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'FixelText',
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              color: selected ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -560,14 +615,12 @@ class _ActionRow extends StatelessWidget {
 
 class _ReminderBlock extends StatelessWidget {
   final String label;
-  final String timeHint;
   final ReminderConfig config;
   final void Function(bool) onToggle;
   final void Function(TimeOfDay) onTimeChanged;
 
   const _ReminderBlock({
     required this.label,
-    required this.timeHint,
     required this.config,
     required this.onToggle,
     required this.onTimeChanged,
@@ -596,14 +649,6 @@ class _ReminderBlock extends StatelessWidget {
                           fontFamily: 'FixelText',
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        timeHint,
-                        style: const TextStyle(
-                          fontFamily: 'FixelText',
-                          fontSize: 14,
-                          color: Colors.black38,
                         ),
                       ),
                     ],

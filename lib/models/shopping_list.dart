@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+import '../l10n/strings.dart';
+
 class ShoppingItem {
   final String id;
   String name;
@@ -56,11 +58,18 @@ class ShoppingList {
   }
 
   static String defaultName(DateTime dt) {
-    const months = [
+    const monthsUk = [
       '', 'січня', 'лютого', 'березня', 'квітня', 'травня', 'червня',
       'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня',
     ];
-    return '${dt.day} ${months[dt.month]}';
+    const monthsEn = [
+      '', 'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+    if (S.locale == 'en') {
+      return '${monthsEn[dt.month]} ${dt.day}';
+    }
+    return '${dt.day} ${monthsUk[dt.month]}';
   }
 
   int get checkedCount => items.where((i) => i.checked).length;

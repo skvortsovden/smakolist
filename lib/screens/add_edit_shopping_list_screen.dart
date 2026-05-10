@@ -67,7 +67,6 @@ class _AddEditShoppingListScreenState
     extends State<AddEditShoppingListScreen> {
   late TextEditingController _nameController;
   late List<_ItemDraft> _drafts;
-  String? _clipboardText;
 
   bool get _isEdit => widget.list != null;
 
@@ -80,21 +79,15 @@ class _AddEditShoppingListScreenState
     } else {
       _nameController = TextEditingController(text: widget.initialName ?? '');
       _drafts = [];
-      _loadClipboard();
     }
   }
 
-  Future<void> _loadClipboard() async {
+  Future<void> _pasteFromClipboard() async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     final text = data?.text?.trim() ?? '';
-    if (text.isNotEmpty && mounted) {
-      setState(() => _clipboardText = text);
-    }
-  }
+    if (text.isEmpty || !mounted) return;
 
-  void _pasteFromClipboard() {
-    if (_clipboardText == null) return;
-    final allLines = _clipboardText!.split('\n');
+    final allLines = text.split('\n');
     final bulletRe = RegExp(r'^[•✓\-\*]');
     final qtyRe = RegExp(r'\s*[—–]\s*(\S+)(?:\s+(.+))?$');
 
@@ -105,25 +98,24 @@ class _AddEditShoppingListScreenState
         final line = raw.trim();
         if (hasBullets && !bulletRe.hasMatch(line)) continue;
 
-        var text = line.replaceFirst(RegExp(r'^[•✓\-\*]\s*'), '');
+        var itemText = line.replaceFirst(RegExp(r'^[•✓\-\*]\s*'), '');
 
         String? qtyStr;
         String? unitStr;
-        final qtyMatch = qtyRe.firstMatch(text);
+        final qtyMatch = qtyRe.firstMatch(itemText);
         if (qtyMatch != null) {
           qtyStr = qtyMatch.group(1);
           unitStr = qtyMatch.group(2)?.trim();
-          text = text.substring(0, qtyMatch.start).trim();
+          itemText = itemText.substring(0, qtyMatch.start).trim();
         }
 
-        if (text.isEmpty) continue;
+        if (itemText.isEmpty) continue;
 
-        final draft = _ItemDraft.newItem(text);
+        final draft = _ItemDraft.newItem(itemText);
         if (qtyStr != null) draft.qtyController.text = qtyStr;
         if (unitStr != null && unitStr.isNotEmpty) draft.unit = unitStr;
         _drafts.add(draft);
       }
-      _clipboardText = null;
     });
   }
 
@@ -313,14 +305,12 @@ class _AddEditShoppingListScreenState
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
               child: Column(
                 children: [
-                  if (_clipboardText != null) ...[
-                    _AddButton(
-                      icon: Icons.content_paste_outlined,
-                      label: S.shoppingPasteBtn,
-                      onTap: _pasteFromClipboard,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                  _AddButton(
+                    icon: Icons.content_paste_outlined,
+                    label: S.shoppingPasteBtn,
+                    onTap: _pasteFromClipboard,
+                  ),
+                  const SizedBox(height: 8),
                   _AddButton(
                     icon: Icons.add,
                     label: S.shoppingAddItemBtn,
@@ -518,7 +508,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
         fontFamily: 'FixelText',
         fontWeight: FontWeight.w700,
@@ -612,7 +602,7 @@ class _RecipePickerSheetState extends State<_RecipePickerSheet> {
                               ),
                               if (recipe.ingredients.isNotEmpty)
                                 Text(
-                                  '${recipe.ingredients.length} інгр.',
+                                  S.shoppingIngredientsShort(recipe.ingredients.length),
                                   style: const TextStyle(
                                     fontFamily: 'FixelText',
                                     fontSize: 13,

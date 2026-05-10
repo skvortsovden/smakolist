@@ -1,0 +1,212 @@
+# ── App ───────────────────────────────────────────────────────────────────────
+app_title: Smakolist
+app_tagline: your tasty list
+
+# ── Navigation tabs ───────────────────────────────────────────────────────────
+tab_calendar: Calendar
+tab_today: Today
+tab_report: Report
+tab_recipes: Recipes
+tab_settings: Settings
+
+# ── Onboarding ────────────────────────────────────────────────────────────────
+onboarding_name_title: "What should we call you?"
+onboarding_name_hint: "Enter your name…"
+onboarding_name_btn: Next
+onboarding_welcome_title: "Welcome, {name}!"
+onboarding_welcome_title_default: "Welcome!"
+onboarding_welcome_body: "Glad you decided to make your lists tasty."
+onboarding_welcome_btn: Next
+onboarding_guide_title: How to use this app?
+onboarding_guide_text: "1. Add your own «Recipes».\n\n2. Open «Today» and log your meals for the day.\n\n3. «Calendar» helps you review and add entries for past days.\n\n4. «Lists» is your shopping list — add ingredients from recipes or manually.\n\n5. Share your recipes with friends directly from the recipe page."
+onboarding_guide_btn: Get started
+
+# ── Splash ────────────────────────────────────────────────────────────────────
+splash_title: Smakolist
+
+# ── Today view ────────────────────────────────────────────────────────────────
+today_greeting_named: "Hello, {name}!"
+today_greeting_default: "Hello, friend!"
+today_date_prefix: Today is
+today_section_meals: Meals
+today_section_note: Note
+today_note_hint: "Any other snacks today?"
+today_slot_breakfast: Breakfast
+today_slot_lunch: Lunch
+today_slot_dinner: Dinner
+today_slot_snack: Snack
+today_slot_time_breakfast: "7:00–10:00"
+today_slot_time_lunch: "12:00–14:00"
+today_slot_time_dinner: "6:00–9:00 PM"
+today_slot_time_snack: anytime
+today_no_items: not added
+today_btn_add_prefix: "+ "
+
+# ── Calendar ─────────────────────────────────────────────────────────────────
+calendar_future_day: This day hasn't come yet
+calendar_no_data: no data added
+calendar_btn_add: Add
+calendar_btn_edit: Edit
+
+# ── Edit day screen ───────────────────────────────────────────────────────────
+edit_btn_save: Save
+
+# ── Recipe picker ────────────────────────────────────────────────────────────
+picker_title_prefix: "Add "
+picker_empty: No recipes yet. Add them in the «Recipes» section.
+picker_go_recipes: Go to Recipes
+picker_filter_all: all
+
+# ── Recipes view ──────────────────────────────────────────────────────────────
+recipes_title: Recipes
+recipes_count_suffix_1: recipe
+recipes_count_suffix_few: recipes
+recipes_count_suffix_many: recipes
+recipes_filter_all: all
+recipes_empty_title: No recipes yet
+recipes_empty_subtitle: "Add your first recipe"
+recipes_empty_btn: "Add"
+
+# ── Recipe detail ────────────────────────────────────────────────────────────
+recipe_detail_delete_btn: Delete recipe
+recipe_delete_title: "Delete recipe?"
+recipe_delete_body: "This recipe will be deleted. Meal entries will remain."
+recipe_delete_confirm: Delete
+recipe_delete_cancel: Cancel
+
+# ── Add / Edit recipe ────────────────────────────────────────────────────────
+recipe_add_title: New recipe
+recipe_edit_title: Edit
+recipe_section_name: Name
+recipe_name_hint: "Dish name…"
+recipe_name_error_duplicate: "Name already exists"
+recipe_section_desc: "Short description"
+recipe_desc_hint: "Short description"
+recipe_section_tags: Meal type
+recipe_btn_save: Save
+
+# ── Shopping lists ────────────────────────────────────────────────────────────
+tab_shopping: Lists
+shopping_title: Shopping lists
+shopping_empty_title: No lists
+shopping_empty_subtitle: "Create your first list"
+shopping_empty_btn: "Add"
+shopping_new_list: New list
+shopping_edit_list: Edit list
+shopping_name_section: NAME
+shopping_name_hint: "List name…"
+shopping_items_section: ITEMS
+shopping_lists_count_suffix_1: list
+shopping_lists_count_suffix_few: lists
+shopping_lists_count_suffix_many: lists
+shopping_items_count: "{n} items"
+shopping_checked_of: "{done} of {total}"
+shopping_add_recipe_btn: Add from recipe
+shopping_paste_btn: Paste items
+shopping_add_item_btn: Add item
+shopping_add_item_hint: "Item name…"
+shopping_pick_recipes_title: Choose recipes
+shopping_pick_recipes_btn: "Add ({n})"
+shopping_copy_clipboard_btn: Copy list
+shopping_copied_snack: List copied
+shopping_duplicate_btn: Duplicate list
+shopping_remove_btn: Delete list
+shopping_delete_title: "Delete list?"
+shopping_delete_body: "The list will be permanently deleted."
+shopping_delete_confirm: Delete
+shopping_delete_cancel: Cancel
+
+# ── Report view ───────────────────────────────────────────────────────────────
+report_title: Report
+report_period_week: Week
+report_period_month: Month
+report_period_year: Year
+report_no_data: Not enough data for this period
+report_section_fill: Entries
+report_fill_days: "{n}/{m} days"
+report_section_streak: Streak
+report_streak_current: "Current: {n} d."
+report_streak_longest: "Longest: {n} d."
+report_section_top: Top dishes
+report_times_suffix: times
+report_section_slots: Meal types
+
+# ── Settings ──────────────────────────────────────────────────────────────────
+settings_title: Settings
+settings_name_label: "What should we call you?"
+settings_name_hint: "Enter name here…"
+settings_section_reminders: Reminders
+settings_reminder_breakfast: Breakfast
+settings_reminder_lunch: Lunch
+settings_reminder_dinner: Dinner
+settings_reminder_time_label: Time
+settings_section_data: Data
+settings_export_btn: Export data
+settings_export_icon: download_outlined
+settings_import_btn: Import data
+settings_clear_btn: Delete all data
+settings_export_title: Export data
+settings_export_message: "Privacy first.\nAll your data is stored on your phone only.\nRecipes will be saved in CSV format."
+settings_export_save: Save
+settings_export_cancel: Cancel
+settings_import_title: Import data
+settings_import_message: "Download the CSV template, fill it in and import — or choose a previously saved CSV file."
+settings_import_template_btn: Download template
+settings_import_choose: Choose file
+settings_import_cancel: Cancel
+settings_import_done_title: Data imported
+settings_import_done_message: Records successfully added.
+settings_import_done_btn: Got it
+settings_import_error_title: Import error
+settings_import_error_message: "Couldn't read the file. Please check the format."
+settings_import_error_btn: Got it
+settings_clear_title: "Delete all data?"
+settings_clear_message: "All recipes and meal entries will be permanently deleted."
+settings_clear_export: "Save & delete"
+settings_clear_erase: Just delete
+settings_clear_cancel: Cancel
+settings_clear_done_title: Data deleted
+settings_clear_done_message: All data was successfully deleted.
+settings_clear_done_btn: Got it
+settings_privacy: All data is stored on this device only.
+settings_version: "Version {v}"
+settings_language_label: Language
+settings_language_uk: Українська
+settings_language_en: English
+
+# ── Common ────────────────────────────────────────────────────────────────────
+common_cancel: Cancel
+common_add: Add
+
+# ── Today (meals header) ──────────────────────────────────────────────────────
+today_meals_title: What's tasty?
+
+# ── Recipe add / edit ─────────────────────────────────────────────────────────
+recipe_section_category: CATEGORY
+recipe_section_ingredients: INGREDIENTS
+recipe_section_desc_label: DESCRIPTION
+recipe_add_photo: Add photo
+recipe_crop_photo: Crop photo
+recipe_photo_gallery: Gallery
+recipe_photo_camera: Camera
+recipe_new_category: New category
+recipe_category_name_hint: "Category name…"
+recipe_category_new_tag: new
+recipe_add_ingredient: Add ingredient
+
+# ── Recipe detail ─────────────────────────────────────────────────────────────
+recipe_share_btn: Share
+recipe_copy_ingredients_btn: Copy ingredient list
+recipe_ingredients_copied: Ingredients copied
+recipe_share_image_hint: Image for social media or messages
+recipe_more_overflow: "+ {n} more"
+
+# ── Shopping list detail ──────────────────────────────────────────────────────
+shopping_list_empty_title: List is empty
+shopping_list_empty_body: Add items via the edit button
+shopping_ingredients_short: "{n} ingr."
+
+# ── Ingredient picker ─────────────────────────────────────────────────────────
+ingredient_picker_title: Choose ingredient
+ingredient_search_hint: "Search or new ingredient…"
+ingredient_add_new: "Add «{name}»"

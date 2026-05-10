@@ -35,7 +35,7 @@ class MealSlotCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  slot.label,
+                  S.mealLabel(slot),
                   style: const TextStyle(
                     fontFamily: 'FixelText',
                     fontWeight: FontWeight.w600,
@@ -119,8 +119,8 @@ class MealSlotCard extends StatelessWidget {
                     border: Border.all(color: Colors.black26, width: 1),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
-                    'Додати',
+                  child: Text(
+                    S.calendarBtnAdd,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'FixelText',

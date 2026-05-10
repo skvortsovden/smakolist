@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/strings.dart';
 import '../providers/app_provider.dart';
 
 class IngredientPickerSheet extends StatefulWidget {
@@ -53,9 +54,9 @@ class _IngredientPickerSheetState extends State<IngredientPickerSheet> {
               padding: const EdgeInsets.fromLTRB(20, 20, 8, 0),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Оберіть інгредієнт',
+                      S.ingredientPickerTitle,
                       style: TextStyle(
                         fontFamily: 'FixelText',
                         fontWeight: FontWeight.w600,
@@ -77,7 +78,7 @@ class _IngredientPickerSheetState extends State<IngredientPickerSheet> {
                 controller: _searchController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Пошук або новий інгредієнт…',
+                  hintText: S.ingredientSearchHint,
                   hintStyle: const TextStyle(color: Colors.black38),
                   prefixIcon: const Icon(Icons.search, color: Colors.black38),
                   filled: true,
@@ -98,7 +99,7 @@ class _IngredientPickerSheetState extends State<IngredientPickerSheet> {
                 children: [
                   if (showAdd)
                     _IngredientRow(
-                      name: 'Додати «${_query.trim().toLowerCase()}»',
+                      name: S.ingredientAddNew(_query.trim().toLowerCase()),
                       isAdd: true,
                       onTap: () {
                         final name = _query.trim().toLowerCase();

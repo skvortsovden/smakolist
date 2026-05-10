@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/strings.dart';
 import '../models/ingredient.dart';
 import '../models/meal_log.dart';
 import '../models/recipe.dart';
@@ -26,6 +27,7 @@ class AppProvider extends ChangeNotifier {
   List<String> _customIngredients = [];
   List<String> _customCategories = [];
   List<ShoppingList> _shoppingLists = [];
+  String _language = 'uk';
 
   ReminderConfig _breakfastReminder =
       const ReminderConfig(enabled: false, time: TimeOfDay(hour: 8, minute: 0));
@@ -47,6 +49,7 @@ class AppProvider extends ChangeNotifier {
   static const _customIngredientsKey = 'smakolist_custom_ingredients';
   static const _customCategoriesKey = 'smakolist_custom_categories';
   static const _shoppingListsKey = 'smakolist_shopping_lists';
+  static const _languageKey = 'smakolist_language';
 
   // ── Getters ──────────────────────────────────────────────────────────────
 
@@ -64,6 +67,7 @@ class AppProvider extends ChangeNotifier {
   List<String> get customIngredients => List.unmodifiable(_customIngredients);
   List<String> get customCategories => List.unmodifiable(_customCategories);
   List<ShoppingList> get shoppingLists => List.unmodifiable(_shoppingLists);
+  String get language => _language;
 
   List<String> get allIngredients => [
         ...kDefaultIngredients,
@@ -81,6 +85,8 @@ class AppProvider extends ChangeNotifier {
     try {
       _prefs = await SharedPreferences.getInstance();
       _username = _prefs!.getString(_usernameKey) ?? '';
+      _language = _prefs!.getString(_languageKey) ?? 'uk';
+      if (_language != 'uk') await S.load(_language);
 
       final rawRecipes = _prefs!.getString(_recipesKey);
       if (rawRecipes != null) {
@@ -277,6 +283,13 @@ class AppProvider extends ChangeNotifier {
 
   // ── Settings ──────────────────────────────────────────────────────────────
 
+  Future<void> setLanguage(String lang) async {
+    _language = lang;
+    _prefs?.setString(_languageKey, lang);
+    await S.load(lang);
+    notifyListeners();
+  }
+
   void setUsername(String name) {
     _username = name;
     _prefs?.setString(_usernameKey, name);
@@ -417,7 +430,7 @@ class AppProvider extends ChangeNotifier {
 
   String buildCsv() {
     final buf = StringBuffer();
-    buf.writeln(_csvRow(['назва', 'категорія', 'прийом їжі', 'інгредієнти', 'опис']));
+    buf.writeln(_csvRow(['name', 'category', 'meal_type', 'ingredients', 'description']));
     for (final r in _recipes) {
       final tags = r.tags.map((t) => t.label).join('; ');
       final ingredients = r.ingredients.map((i) {
@@ -475,7 +488,7 @@ class AppProvider extends ChangeNotifier {
             .where((s) => s.isNotEmpty)
             .map((s) {
               for (final t in MealType.values) {
-                if (t.label == s) return t;
+                if (t.label == s || t.key == s) return t;
               }
               return null;
             })

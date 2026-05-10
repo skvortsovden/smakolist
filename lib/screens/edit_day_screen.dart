@@ -94,7 +94,7 @@ class _EditDayScreenState extends State<EditDayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('d MMMM yyyy', 'uk').format(widget.date);
+    final dateStr = DateFormat('d MMMM yyyy', S.locale).format(widget.date);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -209,7 +209,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
         fontFamily: 'FixelText',
         fontWeight: FontWeight.w700,

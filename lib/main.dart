@@ -78,6 +78,17 @@ class SmakolistApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<AppProvider>(
+      builder: (context, provider, _) {
+        final locale = provider.language == 'en'
+            ? const Locale('en', 'US')
+            : const Locale('uk', 'UA');
+        return _buildApp(locale, provider);
+      },
+    );
+  }
+
+  Widget _buildApp(Locale locale, AppProvider provider) {
     return MaterialApp(
       title: S.appTitle,
       debugShowCheckedModeBanner: false,
@@ -86,8 +97,8 @@ class SmakolistApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('uk', 'UA')],
-      locale: const Locale('uk', 'UA'),
+      supportedLocales: const [Locale('uk', 'UA'), Locale('en', 'US')],
+      locale: locale,
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
@@ -146,17 +157,11 @@ class SmakolistApp extends StatelessWidget {
           space: 0,
         ),
       ),
-      home: Consumer<AppProvider>(
-        builder: (_, provider, __) {
-          if (!provider.isInitialized) {
-            return const SplashScreen();
-          }
-          if (provider.isFirstLaunch) {
-            return const OnboardingScreen();
-          }
-          return const MainScreen();
-        },
-      ),
+      home: !provider.isInitialized
+          ? const SplashScreen()
+          : provider.isFirstLaunch
+              ? const OnboardingScreen()
+              : const MainScreen(),
     );
   }
 }
@@ -174,6 +179,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<AppProvider>();
     return Scaffold(
       body: IndexedStack(
         index: _index,

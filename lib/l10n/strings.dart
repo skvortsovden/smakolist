@@ -1,17 +1,37 @@
 import 'package:flutter/services.dart';
 import 'package:yaml/yaml.dart';
 
+import '../models/recipe.dart';
+
 class S {
   S._();
 
   static Map<String, dynamic> _m = {};
+  static String _locale = 'uk';
 
-  static Future<void> load() async {
-    final raw = await rootBundle.loadString('assets/l10n/uk.yaml');
+  static String get locale => _locale;
+  static String get localeTag => _locale == 'en' ? 'en_US' : 'uk_UA';
+
+  static Future<void> load([String locale = 'uk']) async {
+    _locale = locale;
+    final raw = await rootBundle.loadString('assets/l10n/$locale.yaml');
     _m = Map<String, dynamic>.from(loadYaml(raw) as Map);
   }
 
   static String _s(String key) => _m[key] as String? ?? key;
+
+  static String mealLabel(MealType slot) {
+    switch (slot) {
+      case MealType.breakfast:
+        return _s('today_slot_breakfast');
+      case MealType.lunch:
+        return _s('today_slot_lunch');
+      case MealType.dinner:
+        return _s('today_slot_dinner');
+      case MealType.snack:
+        return _s('today_slot_snack');
+    }
+  }
 
   // ── App ─────────────────────────────────────────────────────────────────
   static String get appTitle => _s('app_title');
@@ -181,6 +201,11 @@ class S {
   static String get settingsClearDoneMessage => _s('settings_clear_done_message');
   static String get settingsClearDoneBtn => _s('settings_clear_done_btn');
   static String get settingsPrivacy => _s('settings_privacy');
+  static String settingsVersion(String v) =>
+      _s('settings_version').replaceFirst('{v}', v);
+  static String get settingsLanguageLabel => _s('settings_language_label');
+  static String get settingsLanguageUk => _s('settings_language_uk');
+  static String get settingsLanguageEn => _s('settings_language_en');
   static String get settingsReminderBreakfast => _s('settings_reminder_breakfast');
   static String get settingsReminderLunch => _s('settings_reminder_lunch');
   static String get settingsReminderDinner => _s('settings_reminder_dinner');
@@ -191,4 +216,44 @@ class S {
   static String get slotTimeLunch => _s('today_slot_time_lunch');
   static String get slotTimeDinner => _s('today_slot_time_dinner');
   static String get slotTimeSnack => _s('today_slot_time_snack');
+
+  // ── Common ────────────────────────────────────────────────────────────────
+  static String get commonCancel => _s('common_cancel');
+  static String get commonAdd => _s('common_add');
+
+  // ── Today meals header ────────────────────────────────────────────────────
+  static String get todayMealsTitle => _s('today_meals_title');
+
+  // ── Recipe add / edit ─────────────────────────────────────────────────────
+  static String get recipeSectionCategory => _s('recipe_section_category');
+  static String get recipeSectionIngredients => _s('recipe_section_ingredients');
+  static String get recipeSectionDescLabel => _s('recipe_section_desc_label');
+  static String get recipeAddPhoto => _s('recipe_add_photo');
+  static String get recipeCropPhoto => _s('recipe_crop_photo');
+  static String get recipePhotoGallery => _s('recipe_photo_gallery');
+  static String get recipePhotoCamera => _s('recipe_photo_camera');
+  static String get recipeNewCategory => _s('recipe_new_category');
+  static String get recipeCategoryNameHint => _s('recipe_category_name_hint');
+  static String get recipeCategoryNewTag => _s('recipe_category_new_tag');
+  static String get recipeAddIngredient => _s('recipe_add_ingredient');
+
+  // ── Recipe detail ─────────────────────────────────────────────────────────
+  static String get recipeShareBtn => _s('recipe_share_btn');
+  static String get recipeCopyIngredientsBtn => _s('recipe_copy_ingredients_btn');
+  static String get recipeIngredientsCopied => _s('recipe_ingredients_copied');
+  static String get recipeShareImageHint => _s('recipe_share_image_hint');
+  static String recipeMoreOverflow(int n) =>
+      _s('recipe_more_overflow').replaceFirst('{n}', '$n');
+
+  // ── Shopping list detail ──────────────────────────────────────────────────
+  static String get shoppingListEmptyTitle => _s('shopping_list_empty_title');
+  static String get shoppingListEmptyBody => _s('shopping_list_empty_body');
+  static String shoppingIngredientsShort(int n) =>
+      _s('shopping_ingredients_short').replaceFirst('{n}', '$n');
+
+  // ── Ingredient picker ─────────────────────────────────────────────────────
+  static String get ingredientPickerTitle => _s('ingredient_picker_title');
+  static String get ingredientSearchHint => _s('ingredient_search_hint');
+  static String ingredientAddNew(String name) =>
+      _s('ingredient_add_new').replaceFirst('{name}', name);
 }

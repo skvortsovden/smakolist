@@ -17,8 +17,8 @@ onboarding_welcome_title: "Вітаю, {name}!"
 onboarding_welcome_title_default: "Вітаю!"
 onboarding_welcome_body: "Радий, що ти вирішив зробити свої списки смачними."
 onboarding_welcome_btn: Далі
-onboarding_guide_title: Як користуватись?
-onboarding_guide_text: "1. Додавай власні «Рецепти».\n\n2. Відкривай «Сьогодні» та додавай свої страви за день.\n\n3. «Календар» допоможе переглянути та додати записи за попередні дні.\n\n4. «Звіт» допоможе стежити за твоїми звичками харчування."
+onboarding_guide_title: Як користуватись додатком?
+onboarding_guide_text: "1. Додавай власні «Рецепти».\n\n2. Відкривай «Сьогодні» та додавай свої страви за день.\n\n3. «Календар» допоможе переглянути та додати записи за попередні дні.\n\n4. «Списки» — твій список покупок: додавай інгредієнти з рецептів або вручну.\n\n5. Діліться рецептами з друзями просто зі сторінки рецепту."
 onboarding_guide_btn: Розпочати
 
 # ── Splash ────────────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ today_greeting_default: "Вітаю, друже!"
 today_date_prefix: Сьогодні
 today_section_meals: Прийоми їжі
 today_section_note: Нотатка
-today_note_hint: "Ще якісь смаколики сьогодні?"
+today_note_hint: "Ще були якісь смаколики сьогодні?"
 today_slot_breakfast: Сніданок
 today_slot_lunch: Обід
 today_slot_dinner: Вечеря
@@ -65,7 +65,7 @@ recipes_count_suffix_many: рецептів
 recipes_filter_all: усі
 recipes_empty_title: Ще немає рецептів
 recipes_empty_subtitle: "Додай свій перший рецепт"
-recipes_empty_btn: "+ Новий рецепт"
+recipes_empty_btn: "Додати"
 
 # ── Recipe detail ────────────────────────────────────────────────────────────
 recipe_detail_delete_btn: Видалити рецепт
@@ -90,7 +90,7 @@ tab_shopping: Списки
 shopping_title: Списки продуктів
 shopping_empty_title: Немає списків
 shopping_empty_subtitle: "Створи свій перший список"
-shopping_empty_btn: "+ Новий список"
+shopping_empty_btn: "Додати"
 shopping_new_list: Новий список
 shopping_edit_list: Редагувати список
 shopping_name_section: НАЗВА
@@ -169,3 +169,44 @@ settings_clear_done_title: Дані видалено
 settings_clear_done_message: Усі дані було успішно видалено.
 settings_clear_done_btn: Зрозуміло
 settings_privacy: Усі дані зберігаються лише на цьому пристрої.
+settings_version: "Версія {v}"
+settings_language_label: Мова
+settings_language_uk: Українська
+settings_language_en: English
+
+# ── Common ────────────────────────────────────────────────────────────────────
+common_cancel: Скасувати
+common_add: Додати
+
+# ── Today (meals header) ──────────────────────────────────────────────────────
+today_meals_title: Що було смачного?
+
+# ── Recipe add / edit ─────────────────────────────────────────────────────────
+recipe_section_category: КАТЕГОРІЯ
+recipe_section_ingredients: ІНГРЕДІЄНТИ
+recipe_section_desc_label: ОПИС
+recipe_add_photo: Додати фото
+recipe_crop_photo: Обрізати фото
+recipe_photo_gallery: Галерея
+recipe_photo_camera: Камера
+recipe_new_category: Нова категорія
+recipe_category_name_hint: "Назва категорії…"
+recipe_category_new_tag: нова
+recipe_add_ingredient: Додати інгредієнт
+
+# ── Recipe detail ─────────────────────────────────────────────────────────────
+recipe_share_btn: Поділитись
+recipe_copy_ingredients_btn: Копіювати список інгредієнтів
+recipe_ingredients_copied: Інгредієнти скопійовано
+recipe_share_image_hint: Картинка для соцмереж або повідомлень
+recipe_more_overflow: "+ ще {n}"
+
+# ── Shopping list detail ──────────────────────────────────────────────────────
+shopping_list_empty_title: Список порожній
+shopping_list_empty_body: Додай позиції через кнопку редагування
+shopping_ingredients_short: "{n} інгр."
+
+# ── Ingredient picker ─────────────────────────────────────────────────────────
+ingredient_picker_title: Оберіть інгредієнт
+ingredient_search_hint: "Пошук або новий інгредієнт…"
+ingredient_add_new: "Додати «{name}»"

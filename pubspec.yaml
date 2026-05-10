@@ -1,6 +1,6 @@
 name: smakolist
 description: Смаколист — твій смачний список
-version: 1.0.0+1
+version: 1.0.0+2
 publish_to: 'none'
 
 environment:
@@ -60,6 +60,7 @@ flutter:
     - assets/smakolist-logo.png
     - assets/fonts/
     - assets/l10n/uk.yaml
+    - assets/l10n/en.yaml
 
   fonts:
     - family: FixelDisplay

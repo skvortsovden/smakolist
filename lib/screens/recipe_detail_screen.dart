@@ -110,7 +110,7 @@ class RecipeDetailScreen extends StatelessWidget {
                     ],
                     // Ingredients
                     if (current.ingredients.isNotEmpty) ...[
-                      const _SectionLabel('ІНГРЕДІЄНТИ'),
+                      _SectionLabel(S.recipeSectionIngredients),
                       const SizedBox(height: 10),
                       ...current.ingredients.map(
                         (i) => Padding(
@@ -153,13 +153,13 @@ class RecipeDetailScreen extends StatelessWidget {
                           border: Border.all(color: Colors.black, width: 2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(Icons.share_outlined,
                                 size: 20, color: Colors.black54),
                             SizedBox(width: 12),
                             Text(
-                              'Поділитись',
+                              S.recipeShareBtn,
                               style: TextStyle(
                                 fontFamily: 'FixelText',
                                 fontSize: 16,
@@ -182,13 +182,13 @@ class RecipeDetailScreen extends StatelessWidget {
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
                               Icon(Icons.copy_outlined,
                                   size: 20, color: Colors.black54),
                               SizedBox(width: 12),
                               Text(
-                                'Копіювати список інгредієнтів',
+                                S.recipeCopyIngredientsBtn,
                                 style: TextStyle(
                                   fontFamily: 'FixelText',
                                   fontSize: 16,
@@ -285,9 +285,9 @@ class RecipeDetailScreen extends StatelessWidget {
     }).join('\n');
     Clipboard.setData(ClipboardData(text: lines));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text(
-          'Інгредієнти скопійовано',
+          S.recipeIngredientsCopied,
           style: TextStyle(fontFamily: 'FixelText'),
         ),
         duration: Duration(seconds: 2),
@@ -466,8 +466,8 @@ class _RecipeShareSheetState extends State<_RecipeShareSheet> {
             ),
             const SizedBox(height: 14),
             // Helper text
-            const Text(
-              'Картинка для соцмереж або повідомлень',
+            Text(
+              S.recipeShareImageHint,
               style: TextStyle(
                 fontFamily: 'FixelText',
                 fontSize: 13,
@@ -498,8 +498,8 @@ class _RecipeShareSheetState extends State<_RecipeShareSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Поділитись',
+                    : Text(
+                        S.recipeShareBtn,
                         style: TextStyle(
                           fontFamily: 'FixelText',
                           fontWeight: FontWeight.w700,
@@ -648,8 +648,8 @@ class _ShareCard extends StatelessWidget {
                           children: [
                             // Description (no photo only)
                             if (hasDesc) ...[
-                              const Text(
-                                'ОПИС',
+                              Text(
+                                S.recipeSectionDescLabel,
                                 style: TextStyle(
                                   fontFamily: 'FixelText',
                                   fontWeight: FontWeight.w700,
@@ -672,8 +672,8 @@ class _ShareCard extends StatelessWidget {
                             ],
                             // Ingredients
                             if (recipe.ingredients.isNotEmpty) ...[
-                              const Text(
-                                'ІНГРЕДІЄНТИ',
+                              Text(
+                                S.recipeSectionIngredients,
                                 style: TextStyle(
                                   fontFamily: 'FixelText',
                                   fontWeight: FontWeight.w700,
@@ -714,7 +714,7 @@ class _ShareCard extends StatelessWidget {
                                   ),
                               if (overflow > 0)
                                 Text(
-                                  '+ ще $overflow',
+                                  S.recipeMoreOverflow(overflow),
                                   style: const TextStyle(
                                     fontFamily: 'FixelText',
                                     fontSize: 11,
@@ -741,13 +741,13 @@ class _ShareCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Смаколист',
+                                S.appTitle,
                                 style: TextStyle(
                                   fontFamily: 'FixelDisplay',
                                   fontSize: 11,
@@ -756,7 +756,7 @@ class _ShareCard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'твій смачний список',
+                                S.appTagline,
                                 style: TextStyle(
                                   fontFamily: 'FixelText',
                                   fontSize: 9,
@@ -771,7 +771,7 @@ class _ShareCard extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              DateFormat('d MMMM', 'uk').format(now),
+                              DateFormat('d MMMM', S.locale).format(now),
                               style: const TextStyle(
                                 fontFamily: 'FixelText',
                                 fontSize: 9,
@@ -779,7 +779,7 @@ class _ShareCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              DateFormat('yyyy', 'uk').format(now),
+                              DateFormat('yyyy', S.locale).format(now),
                               style: const TextStyle(
                                 fontFamily: 'FixelText',
                                 fontSize: 9,
@@ -891,7 +891,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
         fontFamily: 'FixelText',
         fontWeight: FontWeight.w700,
@@ -920,7 +920,7 @@ class _TagChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
-        label,
+        label.toLowerCase(),
         style: TextStyle(
           fontFamily: 'FixelText',
           fontSize: 12,

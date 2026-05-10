@@ -59,7 +59,7 @@ class _RecipesViewState extends State<RecipesView> {
                     ...MealType.values.map((t) => Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: _FilterChip(
-                            label: t.label,
+                            label: S.mealLabel(t),
                             active: _filter == t,
                             onTap: () => setState(() => _filter = t),
                           ),
@@ -276,20 +276,23 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          OutlinedButton(
-            onPressed: onAdd,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.black,
-              side: const BorderSide(color: Colors.black, width: 2),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: Text(
-              S.recipesEmptyBtn,
-              style: const TextStyle(
-                fontFamily: 'FixelText',
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+          GestureDetector(
+            onTap: onAdd,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                S.recipesEmptyBtn,
+                style: const TextStyle(
+                  fontFamily: 'FixelText',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),

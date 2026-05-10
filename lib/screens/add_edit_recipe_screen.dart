@@ -111,14 +111,14 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
       aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Обрізати фото',
+          toolbarTitle: S.recipeCropPhoto,
           toolbarColor: Colors.black,
           toolbarWidgetColor: Colors.white,
           lockAspectRatio: true,
           hideBottomControls: false,
         ),
         IOSUiSettings(
-          title: 'Обрізати фото',
+          title: S.recipeCropPhoto,
           aspectRatioLockEnabled: true,
           resetAspectRatioEnabled: false,
           rotateButtonsHidden: true,
@@ -157,7 +157,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Галерея', style: TextStyle(fontFamily: 'FixelText', fontSize: 16)),
+              title: Text(S.recipePhotoGallery, style: const TextStyle(fontFamily: 'FixelText', fontSize: 16)),
               onTap: () {
                 Navigator.pop(context);
                 _pickPhoto(ImageSource.gallery);
@@ -165,7 +165,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Камера', style: TextStyle(fontFamily: 'FixelText', fontSize: 16)),
+              title: Text(S.recipePhotoCamera, style: const TextStyle(fontFamily: 'FixelText', fontSize: 16)),
               onTap: () {
                 Navigator.pop(context);
                 _pickPhoto(ImageSource.camera);
@@ -237,8 +237,8 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
         backgroundColor: Colors.white,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        title: const Text(
-          'Нова категорія',
+        title: Text(
+          S.recipeNewCategory,
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
         ),
         content: TextField(
@@ -246,7 +246,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
           autofocus: true,
           maxLength: 30,
           decoration: InputDecoration(
-            hintText: 'Назва категорії…',
+            hintText: S.recipeCategoryNameHint,
             hintStyle: const TextStyle(color: Colors.black38),
             counterStyle: const TextStyle(
               fontFamily: 'FixelText',
@@ -270,8 +270,8 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text(
-              'Скасувати',
+            child: Text(
+              S.commonCancel,
               style: TextStyle(color: Colors.black54),
             ),
           ),
@@ -287,7 +287,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
             ),
-            child: const Text('Додати'),
+            child: Text(S.commonAdd),
           ),
         ],
       ),
@@ -415,13 +415,13 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                                     color: Colors.black.withValues(alpha: 0.04),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.add_photo_alternate_outlined, size: 36, color: Colors.black38),
                                       SizedBox(height: 8),
                                       Text(
-                                        'Додати фото',
+                                        S.recipeAddPhoto,
                                         style: TextStyle(
                                           fontFamily: 'FixelText',
                                           fontSize: 14,
@@ -510,7 +510,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                     ),
                     const SizedBox(height: 20),
                     // Category
-                    const _SectionLabel('КАТЕГОРІЯ'),
+                    _SectionLabel(S.recipeSectionCategory),
                     const SizedBox(height: 8),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -541,14 +541,14 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                                     color: Colors.black26, width: 1.5),
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.add,
                                       size: 16, color: Colors.black38),
                                   SizedBox(width: 4),
                                   Text(
-                                    'нова',
+                                    S.recipeCategoryNewTag,
                                     style: TextStyle(
                                       fontFamily: 'FixelText',
                                       fontSize: 14,
@@ -586,7 +586,7 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                     ),
                     const SizedBox(height: 20),
                     // Ingredients
-                    const _SectionLabel('ІНГРЕДІЄНТИ'),
+                    _SectionLabel(S.recipeSectionIngredients),
                     const SizedBox(height: 8),
                     ..._entries.asMap().entries.map((entry) {
                       final i = entry.key;
@@ -609,13 +609,13 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                               Border.all(color: Colors.black26, width: 1.5),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add, size: 18, color: Colors.black45),
                             SizedBox(width: 8),
                             Text(
-                              'Додати інгредієнт',
+                              S.recipeAddIngredient,
                               style: TextStyle(
                                 fontFamily: 'FixelText',
                                 fontSize: 15,
@@ -803,7 +803,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
         fontFamily: 'FixelText',
         fontWeight: FontWeight.w700,

@@ -35,6 +35,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     });
   }
 
+  Future<void> _selectLanguage(String lang) async {
+    await context.read<AppProvider>().setLanguage(lang);
+    if (mounted) _nextPage();
+  }
+
   void _finish() {
     final provider = context.read<AppProvider>();
     final name = _nameController.text.trim();
@@ -58,7 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             const SizedBox(height: 24),
-            _ProgressDots(current: _page),
+            _ProgressDots(current: _page, total: 4),
             const SizedBox(height: 8),
             Expanded(
               child: PageView(
@@ -66,6 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (i) => setState(() => _page = i),
                 children: [
+                  _LangPickerPage(onSelect: _selectLanguage),
                   _NamePage(
                     controller: _nameController,
                     onNext: _nextPage,
@@ -87,14 +93,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class _ProgressDots extends StatelessWidget {
   final int current;
+  final int total;
 
-  const _ProgressDots({required this.current});
+  const _ProgressDots({required this.current, required this.total});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(3, (i) {
+      children: List.generate(total, (i) {
         final isActive = i == current;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 250),
@@ -107,6 +114,87 @@ class _ProgressDots extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+}
+
+class _LangPickerPage extends StatelessWidget {
+  final Future<void> Function(String lang) onSelect;
+
+  const _LangPickerPage({required this.onSelect});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        children: [
+          const Spacer(flex: 2),
+          const Text(
+            'Оберіть мову',
+            style: TextStyle(
+              fontFamily: 'FixelDisplay',
+              fontWeight: FontWeight.w700,
+              fontSize: 28,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Choose language',
+            style: TextStyle(
+              fontFamily: 'FixelDisplay',
+              fontWeight: FontWeight.w700,
+              fontSize: 28,
+              color: Colors.black54,
+            ),
+          ),
+          const Spacer(flex: 2),
+          _LangOption(
+            label: 'Українська',
+            onTap: () => onSelect('uk'),
+          ),
+          const SizedBox(height: 12),
+          _LangOption(
+            label: 'English',
+            onTap: () => onSelect('en'),
+          ),
+          const Spacer(flex: 3),
+        ],
+      ),
+    );
+  }
+}
+
+class _LangOption extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _LangOption({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.black,
+          side: const BorderSide(color: Colors.black, width: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'FixelText',
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+      ),
     );
   }
 }

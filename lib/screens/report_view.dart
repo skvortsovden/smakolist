@@ -42,11 +42,11 @@ class _ReportViewState extends State<ReportView> {
   String _periodLabel(DateTimeRange range) {
     switch (_period) {
       case _Period.week:
-        final s = DateFormat('d MMM', 'uk').format(range.start);
-        final e = DateFormat('d MMM', 'uk').format(range.end);
+        final s = DateFormat('d MMM', S.locale).format(range.start);
+        final e = DateFormat('d MMM', S.locale).format(range.end);
         return '$s – $e';
       case _Period.month:
-        return DateFormat('LLLL yyyy', 'uk').format(range.start);
+        return DateFormat('LLLL yyyy', S.locale).format(range.start);
       case _Period.year:
         return '${range.start.year}';
     }
@@ -398,7 +398,7 @@ class _SlotDistributionCard extends StatelessWidget {
                 SizedBox(
                   width: 80,
                   child: Text(
-                    t.label,
+                    S.mealLabel(t),
                     style: const TextStyle(
                       fontFamily: 'FixelText',
                       fontSize: 14,

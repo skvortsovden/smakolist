@@ -55,7 +55,7 @@ class _RecipePickerSheetState extends State<RecipePickerSheet> {
               children: [
                 Expanded(
                   child: Text(
-                    '${S.pickerTitlePrefix}${widget.slot.label}',
+                    '${S.pickerTitlePrefix}${S.mealLabel(widget.slot)}',
                     style: const TextStyle(
                       fontFamily: 'FixelText',
                       fontWeight: FontWeight.w600,
@@ -86,7 +86,7 @@ class _RecipePickerSheetState extends State<RecipePickerSheet> {
                 ...MealType.values.map((t) => Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: _FilterChip(
-                        label: t.label,
+                        label: S.mealLabel(t),
                         active: _filter == t,
                         onTap: () => setState(() => _filter = t),
                       ),
@@ -201,7 +201,7 @@ class _RecipeRow extends StatelessWidget {
                     Wrap(
                       spacing: 4,
                       children: recipe.tags
-                          .map((t) => _SmallChip(label: t.label))
+                          .map((t) => _SmallChip(label: S.mealLabel(t)))
                           .toList(),
                     ),
                   ],

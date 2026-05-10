@@ -55,7 +55,7 @@ class _CalendarViewState extends State<CalendarView> {
               child: SizedBox(
                 height: 345,
                 child: TableCalendar(
-                  locale: 'uk_UA',
+                  locale: S.localeTag,
                   firstDay: DateTime(2020),
                   lastDay: today,
                   focusedDay: _focusedDay,
@@ -221,7 +221,7 @@ class _DayDetailPanel extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final dateStr = DateFormat('d MMMM yyyy', 'uk_UA').format(selectedDay!);
+    final dateStr = DateFormat('d MMMM yyyy', S.locale).format(selectedDay!);
 
     if (isFuture) {
       return Center(
@@ -295,8 +295,8 @@ class _DayDetailPanel extends StatelessWidget {
                   border: Border.all(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
-                  'Додати',
+                child: Text(
+                  S.calendarBtnAdd,
                   style: TextStyle(
                     fontFamily: 'FixelText',
                     fontWeight: FontWeight.w700,
