@@ -51,6 +51,8 @@ class Recipe {
   final List<RecipeIngredient> ingredients;
   final String? photoPath;
   final DateTime createdAt;
+  final List<String>? steps;
+  final int? cookTimeMinutes;
 
   Recipe({
     required this.id,
@@ -61,6 +63,8 @@ class Recipe {
     this.ingredients = const [],
     this.photoPath,
     required this.createdAt,
+    this.steps,
+    this.cookTimeMinutes,
   });
 
   factory Recipe.create({
@@ -70,6 +74,8 @@ class Recipe {
     String? category,
     List<RecipeIngredient> ingredients = const [],
     String? photoPath,
+    List<String>? steps,
+    int? cookTimeMinutes,
   }) {
     return Recipe(
       id: const Uuid().v4(),
@@ -80,6 +86,8 @@ class Recipe {
       ingredients: ingredients,
       photoPath: photoPath,
       createdAt: DateTime.now(),
+      steps: steps,
+      cookTimeMinutes: cookTimeMinutes,
     );
   }
 
@@ -92,6 +100,8 @@ class Recipe {
     Object? descriptionOrNull = _sentinel,
     Object? categoryOrNull = _sentinel,
     Object? photoPathOrNull = _sentinel,
+    Object? stepsOrNull = _sentinel,
+    Object? cookTimeMinutesOrNull = _sentinel,
   }) {
     return Recipe(
       id: id,
@@ -108,6 +118,10 @@ class Recipe {
           ? photoPath
           : photoPathOrNull as String?,
       createdAt: createdAt,
+      steps: stepsOrNull == _sentinel ? steps : stepsOrNull as List<String>?,
+      cookTimeMinutes: cookTimeMinutesOrNull == _sentinel
+          ? cookTimeMinutes
+          : cookTimeMinutesOrNull as int?,
     );
   }
 
@@ -120,6 +134,8 @@ class Recipe {
         'ingredients': ingredients.map((i) => i.toJson()).toList(),
         'photoPath': photoPath,
         'createdAt': createdAt.toIso8601String(),
+        'steps': steps,
+        'cookTimeMinutes': cookTimeMinutes,
       };
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
@@ -132,6 +148,8 @@ class Recipe {
     final ingredients = rawIngredients
         .map((e) => RecipeIngredient.fromJson(e as Map<String, dynamic>))
         .toList();
+    final rawSteps = json['steps'] as List<dynamic>?;
+    final steps = rawSteps?.map((e) => e as String).toList();
     return Recipe(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -141,6 +159,8 @@ class Recipe {
       ingredients: ingredients,
       photoPath: json['photoPath'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      steps: steps,
+      cookTimeMinutes: json['cookTimeMinutes'] as int?,
     );
   }
 }

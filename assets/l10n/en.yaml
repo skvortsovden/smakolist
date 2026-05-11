@@ -193,6 +193,13 @@ recipe_new_category: New category
 recipe_category_name_hint: "Category name…"
 recipe_category_new_tag: new
 recipe_add_ingredient: Add ingredient
+recipe_section_steps: Cooking steps
+recipe_add_step: Add step
+recipe_step_hint: "Step {n}…"
+recipe_section_cook_time: COOK TIME
+recipe_cook_time_hint: "e.g. 30"
+recipe_cook_time_minutes: min
+recipe_cook_time_hours: h
 
 # ── Recipe detail ─────────────────────────────────────────────────────────────
 recipe_share_btn: Share

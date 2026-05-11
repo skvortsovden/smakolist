@@ -193,6 +193,13 @@ recipe_new_category: Нова категорія
 recipe_category_name_hint: "Назва категорії…"
 recipe_category_new_tag: нова
 recipe_add_ingredient: Додати інгредієнт
+recipe_section_steps: Кроки приготування
+recipe_add_step: Додати крок
+recipe_step_hint: "Крок {n}…"
+recipe_section_cook_time: ЧАС ПРИГОТУВАННЯ
+recipe_cook_time_hint: "30"
+recipe_cook_time_minutes: хв
+recipe_cook_time_hours: год
 
 # ── Recipe detail ─────────────────────────────────────────────────────────────
 recipe_share_btn: Поділитись

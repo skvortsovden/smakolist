@@ -47,6 +47,8 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
   late Set<MealType> _tags;
   String? _category;
   late List<_IngredientEntry> _entries;
+  late List<TextEditingController> _stepControllers;
+  late TextEditingController _cookTimeController;
   String? _photoPath;     // relative: 'recipe_photos/file.jpg' (stored in Recipe)
   String? _photoAbsPath;  // absolute: resolved at runtime for Image.file
   String? _nameError;
@@ -66,6 +68,12 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
     _entries = (widget.recipe?.ingredients ?? [])
         .map((i) => _IngredientEntry(ingredient: i))
         .toList();
+    _stepControllers = (widget.recipe?.steps ?? [])
+        .map((s) => TextEditingController(text: s))
+        .toList();
+    _cookTimeController = TextEditingController(
+      text: widget.recipe?.cookTimeMinutes?.toString() ?? '',
+    );
   }
 
   @override
@@ -75,6 +83,10 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
     for (final e in _entries) {
       e.dispose();
     }
+    for (final c in _stepControllers) {
+      c.dispose();
+    }
+    _cookTimeController.dispose();
     super.dispose();
   }
 
@@ -211,6 +223,19 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
     });
   }
 
+  void _addStep() {
+    setState(() {
+      _stepControllers.add(TextEditingController());
+    });
+  }
+
+  void _removeStep(int index) {
+    setState(() {
+      _stepControllers[index].dispose();
+      _stepControllers.removeAt(index);
+    });
+  }
+
   void _showIngredientPicker() {
     showModalBottomSheet<void>(
       context: context,
@@ -311,6 +336,12 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
       final qty = double.tryParse(e.quantityController.text.trim());
       return e.ingredient.copyWith(quantity: qty, clearQuantity: qty == null);
     }).toList();
+    final steps = _stepControllers
+        .map((c) => c.text.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+    final cookRaw = int.tryParse(_cookTimeController.text.trim());
+    final cookTimeMinutes = (cookRaw != null && cookRaw > 0) ? cookRaw : null;
 
     if (_isEdit) {
       final updated = widget.recipe!.copyWith(
@@ -320,6 +351,8 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
         categoryOrNull: _category,
         ingredients: ingredients,
         photoPathOrNull: _photoPath,
+        stepsOrNull: steps.isEmpty ? null : steps,
+        cookTimeMinutesOrNull: cookTimeMinutes,
       );
       provider.saveRecipe(updated);
     } else {
@@ -330,6 +363,8 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
         category: _category,
         ingredients: ingredients,
         photoPath: _photoPath,
+        steps: steps.isEmpty ? null : steps,
+        cookTimeMinutes: cookTimeMinutes,
       );
       provider.saveRecipe(recipe);
     }
@@ -509,6 +544,45 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    // Cook time
+                    _SectionLabel(S.recipeSectionCookTime),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 80,
+                          child: TextField(
+                            controller: _cookTimeController,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              hintText: S.recipeCookTimeHint,
+                              hintStyle: const TextStyle(color: Colors.black38),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black, width: 2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.black, width: 2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          S.recipeCookTimeMinutes,
+                          style: const TextStyle(
+                            fontFamily: 'FixelText',
+                            fontSize: 15,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     // Category
                     _SectionLabel(S.recipeSectionCategory),
                     const SizedBox(height: 8),
@@ -616,6 +690,93 @@ class _AddEditRecipeScreenState extends State<AddEditRecipeScreen> {
                             SizedBox(width: 8),
                             Text(
                               S.recipeAddIngredient,
+                              style: TextStyle(
+                                fontFamily: 'FixelText',
+                                fontSize: 15,
+                                color: Colors.black45,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Steps
+                    _SectionLabel(S.recipeSectionSteps),
+                    const SizedBox(height: 8),
+                    ..._stepControllers.asMap().entries.map((entry) {
+                      final i = entry.key;
+                      final controller = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 28,
+                              height: 28,
+                              margin: const EdgeInsets.only(top: 10, right: 10),
+                              decoration: const BoxDecoration(
+                                color: Colors.black,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                '${i + 1}',
+                                style: const TextStyle(
+                                  fontFamily: 'FixelText',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextField(
+                                controller: controller,
+                                maxLines: null,
+                                decoration: InputDecoration(
+                                  hintText: S.recipeStepHint(i + 1),
+                                  hintStyle: const TextStyle(color: Colors.black38),
+                                  filled: true,
+                                  fillColor: Colors.black.withValues(alpha: 0.04),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 10),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, size: 18, color: Colors.black38),
+                              onPressed: () => _removeStep(i),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    GestureDetector(
+                      onTap: _addStep,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black26, width: 1.5),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add, size: 18, color: Colors.black45),
+                            SizedBox(width: 8),
+                            Text(
+                              S.recipeAddStep,
                               style: TextStyle(
                                 fontFamily: 'FixelText',
                                 fontSize: 15,

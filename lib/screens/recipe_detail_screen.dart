@@ -19,6 +19,14 @@ import 'add_edit_recipe_screen.dart';
 String _fmtQty(double qty) =>
     qty % 1 == 0 ? qty.toInt().toString() : qty.toString();
 
+String _fmtCookTime(int minutes) {
+  final h = minutes ~/ 60;
+  final m = minutes % 60;
+  if (h == 0) return '$m ${S.recipeCookTimeMinutes}';
+  if (m == 0) return '$h ${S.recipeCookTimeHours}';
+  return '$h ${S.recipeCookTimeHours} $m ${S.recipeCookTimeMinutes}';
+}
+
 class RecipeDetailScreen extends StatelessWidget {
   final Recipe recipe;
 
@@ -94,6 +102,24 @@ class RecipeDetailScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                     ],
+                    // Cook time
+                    if (current.cookTimeMinutes != null) ...[
+                      Row(
+                        children: [
+                          const Icon(Icons.schedule_outlined, size: 16, color: Colors.black45),
+                          const SizedBox(width: 6),
+                          Text(
+                            _fmtCookTime(current.cookTimeMinutes!),
+                            style: const TextStyle(
+                              fontFamily: 'FixelText',
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     // Description
                     if (current.description != null &&
                         current.description!.isNotEmpty) ...[
@@ -141,6 +167,52 @@ class RecipeDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
+                    ],
+                    // Steps
+                    if (current.steps != null && current.steps!.isNotEmpty) ...[
+                      _SectionLabel(S.recipeSectionSteps),
+                      const SizedBox(height: 10),
+                      ...current.steps!.asMap().entries.map(
+                        (entry) => Padding(
+                          padding: const EdgeInsets.only(bottom: 14),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 26,
+                                height: 26,
+                                margin: const EdgeInsets.only(top: 1, right: 12),
+                                decoration: const BoxDecoration(
+                                  color: Colors.black,
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '${entry.key + 1}',
+                                  style: const TextStyle(
+                                    fontFamily: 'FixelText',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  entry.value,
+                                  style: const TextStyle(
+                                    fontFamily: 'FixelText',
+                                    fontSize: 15,
+                                    color: Colors.black87,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                     ],
                     const SizedBox(height: 8),
                     // Share recipe

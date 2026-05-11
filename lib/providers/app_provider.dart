@@ -430,7 +430,7 @@ class AppProvider extends ChangeNotifier {
 
   String buildCsv() {
     final buf = StringBuffer();
-    buf.writeln(_csvRow(['name', 'category', 'meal_type', 'ingredients', 'description']));
+    buf.writeln(_csvRow(['name', 'category', 'meal_type', 'ingredients', 'description', 'steps', 'cook_time_minutes']));
     for (final r in _recipes) {
       final tags = r.tags.map((t) => t.label).join('; ');
       final ingredients = r.ingredients.map((i) {
@@ -442,12 +442,15 @@ class AppProvider extends ChangeNotifier {
         }
         return i.name;
       }).join('; ');
+      final steps = r.steps?.join('; ') ?? '';
       buf.writeln(_csvRow([
         r.name,
         r.category ?? '',
         tags,
         ingredients,
         r.description ?? '',
+        steps,
+        r.cookTimeMinutes?.toString() ?? '',
       ]));
     }
     return buf.toString();
@@ -473,7 +476,7 @@ class AppProvider extends ChangeNotifier {
       for (final row in rows.skip(1)) {
         if (row.every((f) => f.isEmpty)) continue;
         final r = List<String>.from(row);
-        while (r.length < 5) {
+        while (r.length < 6) {
           r.add('');
         }
 
@@ -504,12 +507,22 @@ class AppProvider extends ChangeNotifier {
 
         final description = r[4].trim().isEmpty ? null : r[4].trim().toLowerCase();
 
+        final steps = r[5]
+            .split(';')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
+
+        final cookTimeMinutes = r.length > 6 ? int.tryParse(r[6].trim()) : null;
+
         final recipe = Recipe.create(
           name: name,
           description: description,
           tags: tags,
           category: category,
           ingredients: ingredients,
+          steps: steps.isEmpty ? null : steps,
+          cookTimeMinutes: cookTimeMinutes,
         );
 
         final idx = _recipes.indexWhere(
@@ -521,6 +534,8 @@ class AppProvider extends ChangeNotifier {
             tags: recipe.tags,
             categoryOrNull: category,
             ingredients: recipe.ingredients,
+            stepsOrNull: steps.isEmpty ? null : steps,
+            cookTimeMinutesOrNull: cookTimeMinutes,
           );
         } else {
           _recipes.add(recipe);

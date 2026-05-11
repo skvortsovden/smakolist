@@ -236,6 +236,13 @@ class S {
   static String get recipeCategoryNameHint => _s('recipe_category_name_hint');
   static String get recipeCategoryNewTag => _s('recipe_category_new_tag');
   static String get recipeAddIngredient => _s('recipe_add_ingredient');
+  static String get recipeSectionSteps => _s('recipe_section_steps');
+  static String get recipeAddStep => _s('recipe_add_step');
+  static String recipeStepHint(int n) => _s('recipe_step_hint').replaceFirst('{n}', '$n');
+  static String get recipeSectionCookTime => _s('recipe_section_cook_time');
+  static String get recipeCookTimeHint => _s('recipe_cook_time_hint');
+  static String get recipeCookTimeMinutes => _s('recipe_cook_time_minutes');
+  static String get recipeCookTimeHours => _s('recipe_cook_time_hours');
 
   // ── Recipe detail ─────────────────────────────────────────────────────────
   static String get recipeShareBtn => _s('recipe_share_btn');
